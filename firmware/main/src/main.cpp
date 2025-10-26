@@ -33,6 +33,7 @@ void led_blinking_task(void)
     static uint32_t start_ms = 0;
     static bool led_state = false;
     static bool initialized = false;
+    static uint32_t counter = 0;
 
     if (!initialized) {
         gpio_init(defs::led);
@@ -49,10 +50,12 @@ void led_blinking_task(void)
 
     gpio_put(defs::led, led_state);
     led_state = !led_state;
+
+    printf("led_blinking_task %u\n", counter++);
 }
 
 int main() {
-    // stdio_init_all();
+    stdio_init_all();
 
     tusb.init();
     gpio.init();

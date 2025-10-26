@@ -4,7 +4,7 @@ from enum import IntEnum
 import struct
 
 VENDOR_ID = 0xcafe
-PRODUCT_ID = 0x4014
+PRODUCT_ID = 0x4010
 
 class CommandType(IntEnum):
     NONE = 0x00
@@ -19,14 +19,14 @@ class UsbGpioController:
         if self.dev is None:
             raise ValueError("Device not found")
 
-        # self.dev.set_configuration()
+        self.dev.set_configuration()
         cfg = self.dev.get_active_configuration()
-        intf = cfg[(1, 0)]
+        intf = cfg[(0, 0)]
 
-        # if self.dev.is_kernel_driver_active(intf.bInterfaceNumber):
-        #     self.dev.detach_kernel_driver(intf.bInterfaceNumber)
+        if self.dev.is_kernel_driver_active(intf.bInterfaceNumber):
+            self.dev.detach_kernel_driver(intf.bInterfaceNumber)
 
-        # usb.util.claim_interface(self.dev, intf.bInterfaceNumber)
+        usb.util.claim_interface(self.dev, intf.bInterfaceNumber)
 
         ep_out = usb.util.find_descriptor(
             intf,
