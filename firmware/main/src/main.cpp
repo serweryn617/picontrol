@@ -52,7 +52,7 @@ void led_blinking_task(void)
 }
 
 int main() {
-    // stdio_init_all();
+    stdio_init_all();
 
     tusb.init();
     gpio.init();

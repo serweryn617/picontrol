@@ -1,21 +1,12 @@
 import usb.core
 import usb.util
-from enum import IntEnum
 import struct
+import defs
 
-VENDOR_ID = 0xcafe
-PRODUCT_ID = 0x4014
 
-class CommandType(IntEnum):
-    NONE = 0x00
-    GPIO = 0x01
-    UART = 0x02
-    I2C  = 0x03
-    SPI  = 0x04
-
-class UsbGpioController:
+class VendorGpioController:
     def __init__(self):
-        self.dev = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
+        self.dev = usb.core.find(idVendor=defs.VENDOR_ID, idProduct=defs.PRODUCT_ID)
         if self.dev is None:
             raise ValueError("Device not found")
 
@@ -43,5 +34,5 @@ class UsbGpioController:
         [command_type(1 byte), pin_mask(4 bytes), pin_values(4 bytes)]
         """
         # Pack 1 byte + 2 uint32 little-endian
-        payload = struct.pack('<BII', CommandType.GPIO, pin_mask, pin_values)
+        payload = struct.pack('<BII', defs.CommandType.GPIO, pin_mask, pin_values)
         self._ep_out.write(payload)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import argparse
-from usb_comm import UsbGpioController
+# from vendor_comm import VendorGpioController as UsbGpioController
+from serial_comm import CdcGpioController as UsbGpioController
 
 def main():
     parser = argparse.ArgumentParser(description="Control GPIOs via USB device.")
     subparsers = parser.add_subparsers(dest='command', required=True)
 
-    # GPIO subparser
     gpio_parser = subparsers.add_parser('gpio', help='Control GPIO pins')
     gpio_parser.add_argument('--on', type=int, nargs='+', help='Pins to set HIGH')
     gpio_parser.add_argument('--off', type=int, nargs='+', help='Pins to set LOW')
@@ -16,7 +16,6 @@ def main():
     if args.command == 'gpio':
         controller = UsbGpioController()
 
-        # Build mask and values
         pin_mask = 0
         pin_values = 0
 
