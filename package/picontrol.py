@@ -3,6 +3,24 @@ import argparse
 # from vendor_comm import VendorGpioController as UsbGpioController
 from serial_comm import CdcGpioController as UsbGpioController
 
+
+def make_gpio_masks(gpios_on, gpios_off):
+    pin_mask = 0
+    pin_values = 0
+
+    if gpios_on:
+        for pin in gpios_on:
+            pin_mask |= (1 << pin)
+            pin_values |= (1 << pin)
+
+    if gpios_off:
+        for pin in gpios_off:
+            pin_mask |= (1 << pin)
+            pin_values &= ~(1 << pin)
+
+    return pin_mask, pin_values
+
+
 def main():
     parser = argparse.ArgumentParser(description="Control GPIOs via USB device.")
     subparsers = parser.add_subparsers(dest='command', required=True)
@@ -16,24 +34,14 @@ def main():
     if args.command == 'gpio':
         controller = UsbGpioController()
 
-        pin_mask = 0
-        pin_values = 0
-
-        if args.on:
-            for pin in args.on:
-                pin_mask |= (1 << pin)
-                pin_values |= (1 << pin)
-
-        if args.off:
-            for pin in args.off:
-                pin_mask |= (1 << pin)
-                pin_values &= ~(1 << pin)
+        pin_mask, pin_values = make_gpio_masks(args.on, args.off)
 
         if pin_mask == 0:
             print("No pins specified.")
             return
 
         controller.set_pins(pin_mask, pin_values)
+
 
 if __name__ == "__main__":
     main()
