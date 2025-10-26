@@ -21,4 +21,4 @@ add_subdirectory(main)
 add_subdirectory(lib)
 
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
-pico_enable_stdio_uart(${PROJECT_NAME} 1)
+pico_enable_stdio_uart(${PROJECT_NAME} 0)

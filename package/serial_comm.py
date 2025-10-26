@@ -2,15 +2,15 @@ import serial.tools.list_ports
 import defs
 import struct
 
-def find_cdc_port(vid=defs.VENDOR_ID, pid=defs.PRODUCT_ID):
+def find_cdc_port(vid, pid):
     for port in serial.tools.list_ports.comports():
         if port.vid == vid and port.pid == pid:
             return port.device  # e.g. '/dev/ttyACM0' or 'COM3'
     raise RuntimeError("USB device not found")
 
 class CdcGpioController:
-    def __init__(self):
-        self.port = find_cdc_port()
+    def __init__(self, vid=defs.VENDOR_ID, pid=defs.PRODUCT_ID):
+        self.port = find_cdc_port(vid, pid)
 
     def set_pins(self, pin_mask: int, pin_values: int):
         """
