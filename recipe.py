@@ -6,6 +6,7 @@ projects = {}
 
 projects['all'] = {
     'components': [
+        'clean_tusb',
         'setup',
         'build',
     ],
@@ -29,4 +30,8 @@ projects['build'] = (
 projects['clean'] = (
     'rm -r build',
     'rm -r output',
+)
+
+projects['clean_tusb'] = (
+    'rm -r build/lib/tinyusb',
 )

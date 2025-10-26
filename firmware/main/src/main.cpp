@@ -2,7 +2,6 @@
 #include "pico/stdlib.h"
 
 #include "bsp/board_api.h"
-#include "tusb.h"
 
 #include "i2c/i2c_driver.h"
 #include "uart/uart_driver.h"
