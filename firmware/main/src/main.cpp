@@ -52,6 +52,8 @@ void led_blinking_task(void)
 }
 
 int main() {
+    // stdio_init_all();
+
     tusb.init();
     gpio.init();
 
@@ -62,6 +64,7 @@ int main() {
         if (auto data = tusb.get_data()) {
             command cmd(*data);
             parser.parse_and_execute(cmd);
+            tusb.rearm();
         }
     }
 }
