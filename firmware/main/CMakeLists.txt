@@ -3,12 +3,14 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
+    commands
+    defs
+    gpio_driver
+    i2c_driver
     pico_stdlib
     tinyusb
-    tinyusb_device
     tinyusb_board
-    defs
-    i2c_driver
+    tinyusb_device
     uart_driver
 )
 

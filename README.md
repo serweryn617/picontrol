@@ -2,7 +2,8 @@
 
 Prerequisites:
  - `docker`
+ - `cook` (`pipx install cook-builder`)
 
-Run `cook`.
+To build firmware run `cook`.
 
-Pico firmware will land in `output`.
+Pico firmware (`.uf2`) will land in `output` directory.
