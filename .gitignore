@@ -1,0 +1,4 @@
+.vscode
+*.uf2
+build
+output
