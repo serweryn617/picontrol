@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 VENDOR_ID = 0xcafe
-PRODUCT_ID = 0x4015
+PRODUCT_ID = 0x4001
 
 class CommandType(IntEnum):
     NONE = 0x00

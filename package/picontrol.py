@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
+
 import argparse
-# from vendor_comm import VendorGpioController as UsbGpioController
 from serial_comm import CdcGpioController as UsbGpioController
 
 

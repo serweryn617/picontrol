@@ -9,19 +9,13 @@
 #include "commands/commands.h"
 #include "defs/defs.hpp"
 #include "tinyusb.hpp"
-#include "context.h"
 
 using namespace drivers::i2c;
 using namespace drivers::uart;
 using namespace drivers::gpio;
 using namespace lib::commands;
 
-tinyusb_context global_tinyusb_context {
-    .ready = false,
-    .command = {},
-    .size = 0,
-};
-tiny_usb tusb(global_tinyusb_context);
+tiny_usb tusb;
 i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::slave_address, defs::i2c::baudrate);
 uart_driver uart(defs::uart::inst, defs::uart::rx, defs::uart::tx, defs::uart::baudrate);
 gpio_driver gpio;
@@ -62,6 +56,7 @@ int main() {
 
         tusb.device_task();
         tusb.cdc_task();
+
         if (auto data = tusb.get_data()) {
             command cmd(*data);
             parser.parse_and_execute(cmd);

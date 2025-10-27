@@ -5,16 +5,16 @@
 #include <optional>
 
 #include "pico/stdlib.h"
-#include "context.h"
 
 class tiny_usb
 {
 private:
-    tinyusb_context &tusb_ctx;
-    bool ready();
+    bool ready = false;
+    uint8_t command[64] = {};
+    uint8_t size = 0;
 
 public:
-    tiny_usb(tinyusb_context &_tusb_ctx);
+    tiny_usb();
 
     void init();
     void device_task();

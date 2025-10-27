@@ -9,8 +9,7 @@
 #include "bsp/board.h"
 #include "tusb.h"
 
-tiny_usb::tiny_usb(tinyusb_context &_tusb_ctx)
-    : tusb_ctx(_tusb_ctx)
+tiny_usb::tiny_usb()
 {
 }
 
@@ -21,8 +20,6 @@ void tiny_usb::init()
         .speed = TUSB_SPEED_AUTO
     };
     tusb_init(BOARD_TUD_RHPORT, &dev_init);
-
-    tusb_ctx.ready = false;
 }
 
 void tiny_usb::device_task()
@@ -32,16 +29,16 @@ void tiny_usb::device_task()
 
 std::optional<std::span<uint8_t>> tiny_usb::get_data()
 {
-    if (!tusb_ctx.ready) {
+    if (!ready) {
         return std::nullopt;
     }
 
-    return std::span<uint8_t>(tusb_ctx.command, tusb_ctx.size);
+    return std::span<uint8_t>(command, size);
 }
 
 void tiny_usb::rearm()
 {
-    tusb_ctx.ready = false;
+    ready = false;
 }
 
 void tiny_usb::cdc_task()
@@ -50,14 +47,10 @@ void tiny_usb::cdc_task()
         return;
     }
 
-    if (tusb_ctx.ready) {
+    if (ready) {
         return;
     }
 
-    uint8_t buffer[64];
-    uint32_t bufsize = tud_cdc_read(buffer, sizeof(buffer));
-
-    memcpy(tusb_ctx.command, buffer, bufsize);
-    tusb_ctx.size = bufsize;
-    tusb_ctx.ready = true;
+    size = tud_cdc_read(command, sizeof(command));
+    ready = true;
 }
