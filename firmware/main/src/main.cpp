@@ -62,10 +62,10 @@ int main() {
 
         tusb.device_task();
         tusb.cdc_task();
-        if (auto data = tusb.get_data()) {
-            command cmd(*data);
-            parser.parse_and_execute(cmd);
-            tusb.rearm();
-        }
+        // if (auto data = tusb.get_data()) {
+        //     command cmd(*data);
+        //     parser.parse_and_execute(cmd);
+        //     tusb.rearm();
+        // }
     }
 }

@@ -63,16 +63,16 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
   (void) report_type;
 
   // echo back anything we received from host, converted to uppercase
-  uint8_t uppercase[64] = {};
-  uint8_t count = bufsize > 64 ? 64 : bufsize;
-  for (uint8_t i = 0; i < count; i++) {
-    uint8_t elem = buffer[i];
-    if (elem >= 97 && elem <= 122) {
-        elem -= 32;
-    }
-    uppercase[i] = elem;
-  }
-  tud_hid_report(0, uppercase, count);
+  // uint8_t uppercase[64] = {};
+  // uint8_t count = bufsize > 64 ? 64 : bufsize;
+  // for (uint8_t i = 0; i < count; i++) {
+  //   uint8_t elem = buffer[i];
+  //   if (elem >= 97 && elem <= 122) {
+  //       elem -= 32;
+  //   }
+  //   uppercase[i] = elem;
+  // }
+  // tud_hid_report(0, uppercase, count);
 }
 
 //--------------------------------------------------------------------+
@@ -81,18 +81,18 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
 
 void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
 {
-  printf("tud_vendor_rx_cb\n");
-  printf("  got %u bytes\n  ", bufsize);
-  for (size_t i = 0; i < bufsize; i++)
-  {
-    printf("%u ", buffer[i]);
-  }
-  printf("\n");
+  // printf("tud_vendor_rx_cb\n");
+  // printf("  got %u bytes\n  ", bufsize);
+  // for (size_t i = 0; i < bufsize; i++)
+  // {
+  //   printf("%u ", buffer[i]);
+  // }
+  // printf("\n");
 
-  // TODO: don't overwrite
-  memcpy(global_tinyusb_context.command, buffer, bufsize);
-  global_tinyusb_context.size = bufsize;
-  global_tinyusb_context.ready = true;
+  // // TODO: don't overwrite
+  // memcpy(global_tinyusb_context.command, buffer, bufsize);
+  // global_tinyusb_context.size = bufsize;
+  // global_tinyusb_context.ready = true;
   tud_vendor_read_flush();
 }
 
