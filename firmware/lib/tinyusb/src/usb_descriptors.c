@@ -94,14 +94,17 @@ enum
   ITF_NUM_HID = 0,
   ITF_NUM_VENDOR,
   ITF_NUM_CDC,
+  ITF_NUM_CDC_DATA,
   ITF_NUM_TOTAL
 };
 
-#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN + TUD_VENDOR_DESC_LEN + TUD_CDC_DESC_LEN)
+#define  CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN + TUD_VENDOR_DESC_LEN + CFG_TUD_CDC * TUD_CDC_DESC_LEN)
 
 #define EPNUM_HID   0x01
+
 #define EPNUM_VENDOR_OUT 0x02
 #define EPNUM_VENDOR_IN  0x82
+
 #define EPNUM_CDC_NOTIF 0x83
 #define EPNUM_CDC_OUT   0x04
 #define EPNUM_CDC_IN    0x84
@@ -116,7 +119,7 @@ uint8_t const desc_configuration[] =
 
   TUD_VENDOR_DESCRIPTOR(ITF_NUM_VENDOR, 0, EPNUM_VENDOR_OUT, EPNUM_VENDOR_IN, 64),
 
-  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
+  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 16, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
@@ -147,6 +150,7 @@ char const *string_desc_arr[] =
   "TinyUSB",                     // 1: Manufacturer
   "TinyUSB Device",              // 2: Product
   NULL,                          // 3: Serials will use unique ID if possible
+  "TinyUSB CDC",                 // 4: CDC Interface
 };
 
 static uint16_t _desc_str[32 + 1];

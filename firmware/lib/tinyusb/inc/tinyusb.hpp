@@ -15,8 +15,11 @@ private:
 
 public:
     tiny_usb(tinyusb_context &_tusb_ctx);
+
     void init();
     void device_task();
+    void cdc_task();
+
     std::optional<std::span<uint8_t>> get_data();
     void rearm();
 };

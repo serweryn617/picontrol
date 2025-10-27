@@ -99,30 +99,3 @@ void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
 void tud_vendor_tx_cb(uint8_t itf, uint32_t sent_bytes)
 {
 }
-
-//--------------------------------------------------------------------+
-// CDC
-//--------------------------------------------------------------------+
-
-void tud_cdc_rx_cb(uint8_t itf)
-{
-  uint8_t buffer[64];
-  uint32_t bufsize = tud_cdc_read(buffer, sizeof(buffer));
-
-  printf("tud_cdc_rx_cb\n");
-  printf("  got %u bytes\n  ", bufsize);
-  for (size_t i = 0; i < bufsize; i++)
-  {
-    printf("%u ", buffer[i]);
-  }
-  printf("\n");
-
-  if (global_tinyusb_context.ready) {
-    printf("TinyUSB not ready!\n");
-    return;
-  }
-
-  memcpy(global_tinyusb_context.command, buffer, bufsize);
-  global_tinyusb_context.size = bufsize;
-  global_tinyusb_context.ready = true;
-}

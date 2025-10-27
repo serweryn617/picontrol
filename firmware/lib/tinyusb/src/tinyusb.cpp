@@ -43,3 +43,21 @@ void tiny_usb::rearm()
 {
     tusb_ctx.ready = false;
 }
+
+void tiny_usb::cdc_task()
+{
+    if (!tud_cdc_available()) {
+        return;
+    }
+
+    if (tusb_ctx.ready) {
+        return;
+    }
+
+    uint8_t buffer[64];
+    uint32_t bufsize = tud_cdc_read(buffer, sizeof(buffer));
+
+    memcpy(tusb_ctx.command, buffer, bufsize);
+    tusb_ctx.size = bufsize;
+    tusb_ctx.ready = true;
+}
