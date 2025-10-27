@@ -10,6 +10,7 @@ Pico firmware (`.uf2`) will land in `output` directory.
 
 ## USB endpoints performance on Pico
 
+```
 Testing bulk endpoint (64B packet)
 Sent 1024.00 KiB in 2.6477 s
 Throughput: 386.75 KiB/s (3168.28 Kbit/s)
@@ -33,3 +34,4 @@ Throughput: 496.13 KiB/s (4064.26 Kbit/s)
 Testing CDC (512kB packet)
 Sent 1024.00 KiB in 2.1377 s
 Throughput: 479.02 KiB/s (3924.15 Kbit/s)
+```
