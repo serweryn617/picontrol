@@ -48,7 +48,7 @@ def main():
     if args.command == 'gpio' and args.gpio_command == "get":
         controller = UsbGpioController()
         pin_state = controller.get_pins()
-        print(pin_state)
+        print(bin(pin_state))
 
 
 if __name__ == "__main__":

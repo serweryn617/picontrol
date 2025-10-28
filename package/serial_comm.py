@@ -29,5 +29,6 @@ class CdcGpioController:
         ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
         ser.write(payload)
         result = ser.read(4)
+        result = struct.unpack('<I', result)[0]
         ser.close()
         return result
