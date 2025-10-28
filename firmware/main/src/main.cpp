@@ -16,10 +16,10 @@ using namespace drivers::gpio;
 using namespace lib::commands;
 
 tiny_usb tusb;
-i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::slave_address, defs::i2c::baudrate);
+i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::default_address, defs::i2c::default_speed, defs::i2c::default_timeout_us);
 uart_driver uart(defs::uart::inst, defs::uart::rx, defs::uart::tx, defs::uart::baudrate);
 gpio_driver gpio;
-command_parser parser(gpio);
+command_parser parser(gpio, i2c);
 
 void led_blinking_task(void)
 {

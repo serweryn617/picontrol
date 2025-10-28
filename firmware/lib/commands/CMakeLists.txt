@@ -10,4 +10,5 @@ target_link_libraries(commands
 PUBLIC
     pico_stdlib
     gpio_driver
+    i2c_driver
 )

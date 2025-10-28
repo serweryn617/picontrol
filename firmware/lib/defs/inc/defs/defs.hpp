@@ -17,8 +17,9 @@ namespace i2c {
 constexpr uint8_t inst = 1;
 constexpr uint8_t sda = 6;
 constexpr uint8_t scl = 7;
-constexpr uint32_t baudrate = 400'000;
-constexpr uint8_t slave_address = 0x3c;
+constexpr uint32_t default_speed = 400'000;
+constexpr uint8_t default_address = 0x3c;
+constexpr uint32_t default_timeout_us = 500'000;
 }  // namespace i2c
 
 namespace gpio {

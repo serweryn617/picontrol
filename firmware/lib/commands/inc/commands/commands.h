@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include "gpio/gpio_driver.h"
+#include "i2c/i2c_driver.h"
 #include <span>
 
 namespace lib::commands {
@@ -10,9 +11,13 @@ namespace lib::commands {
 enum class command_type : uint8_t {
     none = 0,
     gpio = 1,
-    uart = 2,
-    i2c = 3,
-    spi = 4,
+    uart = 20,
+    i2c_set_speed = 30,
+    i2c_set_address = 31,
+    i2c_set_timeout = 32,
+    i2c_read = 33,
+    i2c_write = 34,
+    spi = 40,
 };
 
 struct command {
@@ -40,13 +45,21 @@ struct command {
 class command_parser
 {
 public:
-    command_parser(drivers::gpio::gpio_driver &_gpio);
+    command_parser(drivers::gpio::gpio_driver &_gpio, drivers::i2c::i2c_driver &_i2c);
 
     void parse_and_execute(command& cmd);
     void execute_gpio_command(std::span<uint8_t> payload);
+    void execute_i2c_set_speed_command(std::span<uint8_t> payload);
+    void execute_i2c_set_address_command(std::span<uint8_t> payload);
+    void execute_i2c_set_timeout_command(std::span<uint8_t> payload);
+    void execute_i2c_read_command(std::span<uint8_t> payload);
+    void execute_i2c_write_command(std::span<uint8_t> payload);
 
 private:
     drivers::gpio::gpio_driver &gpio;
+    drivers::i2c::i2c_driver &i2c;
+
+    uint8_t data_buffer[64 * 1024] = {};
 };
 
 }  // namespace lib::commands
