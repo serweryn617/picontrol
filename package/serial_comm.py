@@ -32,3 +32,15 @@ class CdcGpioController:
         result = struct.unpack('<I', result)[0]
         ser.close()
         return result
+
+    def send_data(self, payload):
+        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
+        ser.write(payload)
+        ser.close()
+
+    def send_receive_data(self, write_payload, read_length):
+        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
+        ser.write(write_payload)
+        result = ser.read(read_length)
+        ser.close()
+        return result

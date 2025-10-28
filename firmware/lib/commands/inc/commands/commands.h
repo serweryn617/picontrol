@@ -22,6 +22,14 @@ enum class command_type : uint8_t {
     spi = 40,
 };
 
+// TODO
+enum class command_status : uint8_t {
+    ok = 0,
+    generic_error = 1,
+    parameter_error = 2,
+    i2c_error = 3,
+};
+
 struct command {
     command_type type;
     std::span<uint8_t> payload;
@@ -55,7 +63,7 @@ public:
     void execute_i2c_set_speed_command(std::span<uint8_t> payload);
     void execute_i2c_set_address_command(std::span<uint8_t> payload);
     void execute_i2c_set_timeout_command(std::span<uint8_t> payload);
-    void execute_i2c_read_command(std::span<uint8_t> payload);
+    command_status execute_i2c_read_command(std::span<uint8_t> payload);
     void execute_i2c_write_command(std::span<uint8_t> payload);
 
 private:
@@ -63,6 +71,7 @@ private:
     drivers::i2c::i2c_driver &i2c;
 
     uint8_t data_buffer[64 * 1024] = {};
+    // uint8_t data_length = 0;
 };
 
 }  // namespace lib::commands

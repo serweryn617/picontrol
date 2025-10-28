@@ -23,6 +23,8 @@ command_parser::command_parser(gpio_driver &_gpio, i2c_driver &_i2c)
 
 std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd)
 {
+  command_status result = command_status::generic_error;
+
   switch (cmd.type) {
   case command_type::gpio_set:
     execute_gpio_set_command(cmd.payload);
@@ -45,7 +47,7 @@ std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd
     break;
 
   case command_type::i2c_read:
-    execute_i2c_read_command(cmd.payload);
+    result = execute_i2c_read_command(cmd.payload);
     break;
 
   case command_type::i2c_write:
@@ -56,7 +58,8 @@ std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd
     break;
   }
 
-  return std::nullopt;
+  data_buffer[0] = static_cast<uint8_t>(result);
+  return std::span<uint8_t>(data_buffer, 1);
 }
 
 void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
@@ -90,13 +93,11 @@ void command_parser::execute_i2c_set_speed_command(std::span<uint8_t> payload)
 
 void command_parser::execute_i2c_set_address_command(std::span<uint8_t> payload)
 {
-  if (payload.size() != 4) {
+  if (payload.size() != 1) {
     return;
   }
 
-  uint32_t address = word(payload, 0);
-
-  i2c.set_address(address);
+  i2c.set_address(payload[0]);
 }
 
 void command_parser::execute_i2c_set_timeout_command(std::span<uint8_t> payload)
@@ -110,15 +111,19 @@ void command_parser::execute_i2c_set_timeout_command(std::span<uint8_t> payload)
   i2c.set_address(timeout);
 }
 
-void command_parser::execute_i2c_read_command(std::span<uint8_t> payload)
+command_status command_parser::execute_i2c_read_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 4) {
-    return;
+    return command_status::parameter_error;
   }
 
   uint32_t length = word(payload, 0);
 
-  i2c.read_data(data_buffer, length);
+  int result = i2c.read_data(data_buffer, length);
+  if (result < 0) {
+    return command_status::i2c_error;
+  }
+  return command_status::ok;
 }
 
 void command_parser::execute_i2c_write_command(std::span<uint8_t> payload)

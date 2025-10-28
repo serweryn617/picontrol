@@ -14,3 +14,9 @@ class CommandType(IntEnum):
     I2C_READ = 33
     I2C_WRITE = 34
     SPI = 40
+
+class CommandStatus(IntEnum):
+    OK = 0
+    GENERIC_ERROR = 1
+    PARAMETER_ERROR = 2
+    I2C_ERROR = 3

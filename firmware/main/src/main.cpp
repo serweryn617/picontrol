@@ -50,6 +50,7 @@ int main() {
 
     tusb.init();
     gpio.init();
+    i2c.init();
 
     while (true) {
         led_blinking_task();

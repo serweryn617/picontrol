@@ -2,7 +2,9 @@
 
 import argparse
 from serial_comm import CdcGpioController as UsbGpioController
-
+import i2c_commands
+import struct
+import defs
 
 def make_gpio_masks(gpios_on, gpios_off):
     pin_mask = 0
@@ -32,6 +34,10 @@ def main():
     gpio_set_parser.add_argument('--off', type=int, nargs='+', help='Pins to set LOW')
     gpio_get_parser = gpio_subparsers.add_parser('get', help='Get GPIO pins')
 
+    i2c_parser = subparsers.add_parser('i2c', help='Control I2C')
+    i2c_subparsers = i2c_parser.add_subparsers(dest='i2c_command', required=True)
+    i2c_scan_parser = i2c_subparsers.add_parser('scan', help='Scan I2C addresses')
+
     args = parser.parse_args()
 
     if args.command == 'gpio' and args.gpio_command == "set":
@@ -49,6 +55,21 @@ def main():
         controller = UsbGpioController()
         pin_state = controller.get_pins()
         print(bin(pin_state))
+
+    if args.command == 'i2c' and args.i2c_command == "scan":
+        controller = UsbGpioController()
+
+        print("I2C Bus Scan")
+        print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end='')
+
+        for addr in range(1 << 7):
+            if (addr % 16 == 0):
+                print(f"\n{addr:02x} ", end="")
+            controller.send_data(i2c_commands.make_i2c_set_address_command(addr))
+            result = controller.send_receive_data(i2c_commands.make_i2c_read_command(1), 1)
+            result = struct.unpack('<B', result)[0]
+            print(f"{'.' if result == defs.CommandStatus.I2C_ERROR else '@'} ", end="")
+        print()
 
 
 if __name__ == "__main__":
