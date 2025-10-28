@@ -13,11 +13,6 @@ void gpio_driver::init()
     }
 }
 
-void gpio_driver::set(uint8_t pin_num, bool value)
-{
-    gpio_put(defs::gpio::gpios[pin_num], value);
-}
-
 void gpio_driver::put_masked(uint32_t mask, uint32_t value)
 {
     uint32_t pin_mask = 0;
@@ -33,6 +28,20 @@ void gpio_driver::put_masked(uint32_t mask, uint32_t value)
     }
 
     gpio_put_masked(pin_mask, val_mask);
+}
+
+uint32_t gpio_driver::get()
+{
+    uint32_t gpio_state = gpio_get_all();
+    uint32_t out_value = 0;
+
+    for (uint32_t i = 0; i < defs::gpio::gpios.size(); i++)
+    {
+        bool pin_i_val = (gpio_state >> defs::gpio::gpios[i]) & 0b1;
+        out_value |= pin_i_val << i;
+    }
+
+    return out_value;
 }
 
 }  // namespace drivers::i2c

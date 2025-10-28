@@ -17,8 +17,17 @@ class CdcGpioController:
         Send a GPIO command with:
         [command_type(1 byte), pin_mask(4 bytes), pin_values(4 bytes)]
         """
-        payload = struct.pack('<BII', defs.CommandType.GPIO, pin_mask, pin_values)
+        payload = struct.pack('<BII', defs.CommandType.GPIO_SET, pin_mask, pin_values)
 
-        ser = serial.Serial(self.port, 115200)
+        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
         ser.write(payload)
         ser.close()
+
+    def get_pins(self):
+        payload = struct.pack('<B', defs.CommandType.GPIO_GET)
+
+        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
+        ser.write(payload)
+        result = ser.read(4)
+        ser.close()
+        return result

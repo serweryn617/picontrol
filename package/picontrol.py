@@ -26,12 +26,15 @@ def main():
     subparsers = parser.add_subparsers(dest='command', required=True)
 
     gpio_parser = subparsers.add_parser('gpio', help='Control GPIO pins')
-    gpio_parser.add_argument('--on', type=int, nargs='+', help='Pins to set HIGH')
-    gpio_parser.add_argument('--off', type=int, nargs='+', help='Pins to set LOW')
+    gpio_subparsers = gpio_parser.add_subparsers(dest='gpio_command', required=True)
+    gpio_set_parser = gpio_subparsers.add_parser('set', help='Set GPIO pins')
+    gpio_set_parser.add_argument('--on', type=int, nargs='+', help='Pins to set HIGH')
+    gpio_set_parser.add_argument('--off', type=int, nargs='+', help='Pins to set LOW')
+    gpio_get_parser = gpio_subparsers.add_parser('get', help='Get GPIO pins')
 
     args = parser.parse_args()
 
-    if args.command == 'gpio':
+    if args.command == 'gpio' and args.gpio_command == "set":
         controller = UsbGpioController()
 
         pin_mask, pin_values = make_gpio_masks(args.on, args.off)
@@ -41,6 +44,11 @@ def main():
             return
 
         controller.set_pins(pin_mask, pin_values)
+
+    if args.command == 'gpio' and args.gpio_command == "get":
+        controller = UsbGpioController()
+        pin_state = controller.get_pins()
+        print(pin_state)
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ public:
     void cdc_task();
 
     std::optional<std::span<uint8_t>> get_data();
+    void send_data(std::span<uint8_t> data);
     void rearm();
 };
 

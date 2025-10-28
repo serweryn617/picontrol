@@ -4,8 +4,13 @@ VENDOR_ID = 0xcafe
 PRODUCT_ID = 0x4001
 
 class CommandType(IntEnum):
-    NONE = 0x00
-    GPIO = 0x01
-    UART = 0x02
-    I2C  = 0x03
-    SPI  = 0x04
+    NONE = 0
+    GPIO_SET = 10
+    GPIO_GET = 11
+    UART = 20
+    I2C_SET_SPEED = 30
+    I2C_SET_ADDRESS = 31
+    I2C_SET_TIMEOUT = 32
+    I2C_READ = 33
+    I2C_WRITE = 34
+    SPI = 40

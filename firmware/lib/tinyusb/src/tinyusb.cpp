@@ -54,3 +54,9 @@ void tiny_usb::cdc_task()
     size = tud_cdc_read(command, sizeof(command));
     ready = true;
 }
+
+void tiny_usb::send_data(std::span<uint8_t> data)
+{
+    tud_cdc_write(data.data(), data.size());
+    tud_cdc_write_flush();
+}

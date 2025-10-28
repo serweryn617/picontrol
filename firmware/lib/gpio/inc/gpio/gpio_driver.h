@@ -9,8 +9,8 @@ class gpio_driver
 {
 public:
     void init();
-    void set(uint8_t pin_num, bool value);
     void put_masked(uint32_t mask, uint32_t value);
+    uint32_t get();
 };
 
 }  // namespace drivers::gpio

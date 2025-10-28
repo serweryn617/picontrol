@@ -5,12 +5,14 @@
 #include "gpio/gpio_driver.h"
 #include "i2c/i2c_driver.h"
 #include <span>
+#include <optional>
 
 namespace lib::commands {
 
 enum class command_type : uint8_t {
     none = 0,
-    gpio = 1,
+    gpio_set = 10,
+    gpio_get = 11,
     uart = 20,
     i2c_set_speed = 30,
     i2c_set_address = 31,
@@ -47,8 +49,9 @@ class command_parser
 public:
     command_parser(drivers::gpio::gpio_driver &_gpio, drivers::i2c::i2c_driver &_i2c);
 
-    void parse_and_execute(command& cmd);
-    void execute_gpio_command(std::span<uint8_t> payload);
+    std::optional<std::span<uint8_t>> parse_and_execute(command& cmd);
+    void execute_gpio_set_command(std::span<uint8_t> payload);
+    void execute_gpio_get_command();
     void execute_i2c_set_speed_command(std::span<uint8_t> payload);
     void execute_i2c_set_address_command(std::span<uint8_t> payload);
     void execute_i2c_set_timeout_command(std::span<uint8_t> payload);
