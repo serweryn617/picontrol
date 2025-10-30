@@ -21,9 +21,9 @@ command_parser::command_parser(gpio_driver &_gpio, i2c_driver &_i2c)
 {
 }
 
-std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd)
+std::span<uint8_t> command_parser::parse_and_execute(command& cmd)
 {
-  command_status result = command_status::generic_error;
+  set_status(command_status::generic_error, 0);
 
   switch (cmd.type) {
   case command_type::gpio_set:
@@ -32,7 +32,7 @@ std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd
 
   case command_type::gpio_get:
     execute_gpio_get_command();
-    return std::span<uint8_t>(data_buffer, 4);
+    break;
 
   case command_type::i2c_set_speed:
     execute_i2c_set_speed_command(cmd.payload);
@@ -47,7 +47,7 @@ std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd
     break;
 
   case command_type::i2c_read:
-    result = execute_i2c_read_command(cmd.payload);
+    execute_i2c_read_command(cmd.payload);
     break;
 
   case command_type::i2c_write:
@@ -58,13 +58,19 @@ std::optional<std::span<uint8_t>> command_parser::parse_and_execute(command& cmd
     break;
   }
 
-  data_buffer[0] = static_cast<uint8_t>(result);
-  return std::span<uint8_t>(data_buffer, 1);
+  return std::span<uint8_t>(data_buffer, data_length);
+}
+
+void command_parser::set_status(command_status status, uint32_t payload_length)
+{
+  data_buffer[0] = static_cast<uint8_t>(status);
+  data_length = 1 + payload_length;
 }
 
 void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 8) {
+    set_status(command_status::parameter_error, 0);
     return;
   }
 
@@ -72,67 +78,81 @@ void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
   uint32_t value = word(payload, 1);
 
   gpio.put_masked(mask, value);
+  set_status(command_status::ok, 0);
 }
 
 void command_parser::execute_gpio_get_command()
 {
   uint32_t gpio_state = gpio.get();
-  memcpy(data_buffer, &gpio_state, sizeof(gpio_state));
+  memcpy(payload_buffer, &gpio_state, sizeof(gpio_state));
+  set_status(command_status::ok, 4);
 }
 
 void command_parser::execute_i2c_set_speed_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 4) {
+    set_status(command_status::parameter_error, 0);
     return;
   }
 
   uint32_t speed = word(payload, 0);
 
   i2c.set_speed(speed);
+  set_status(command_status::ok, 0);
 }
 
 void command_parser::execute_i2c_set_address_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 1) {
+    set_status(command_status::parameter_error, 0);
     return;
   }
 
   i2c.set_address(payload[0]);
+  set_status(command_status::ok, 0);
 }
 
 void command_parser::execute_i2c_set_timeout_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 4) {
+    set_status(command_status::parameter_error, 0);
     return;
   }
 
   uint32_t timeout = word(payload, 0);
 
   i2c.set_address(timeout);
+  set_status(command_status::ok, 0);
 }
 
-command_status command_parser::execute_i2c_read_command(std::span<uint8_t> payload)
+void command_parser::execute_i2c_read_command(std::span<uint8_t> payload)
 {
   if (payload.size() != 4) {
-    return command_status::parameter_error;
+    set_status(command_status::parameter_error, 0);
+    return;
   }
 
   uint32_t length = word(payload, 0);
 
-  int result = i2c.read_data(data_buffer, length);
+  int result = i2c.read_data(payload_buffer, length);
+
   if (result < 0) {
-    return command_status::i2c_error;
+    set_status(command_status::i2c_error, 0);
+    return;
   }
-  return command_status::ok;
+  set_status(command_status::ok, result);
+  return;
 }
 
 void command_parser::execute_i2c_write_command(std::span<uint8_t> payload)
 {
   if (payload.size() == 0) {
+    set_status(command_status::parameter_error, 0);
     return;
   }
 
   i2c.write_data(payload.data(), payload.size());
+  set_status(command_status::ok, 0);
 }
 
 }  // namespace lib::commands

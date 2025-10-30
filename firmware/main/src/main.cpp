@@ -66,10 +66,6 @@ int main() {
         command cmd(*data);
         auto response = parser.parse_and_execute(cmd);
         tusb.rearm();
-        if (!response) {
-            continue;
-        }
-
-        tusb.send_data(*response);
+        tusb.send_data(response);
     }
 }

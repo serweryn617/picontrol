@@ -57,13 +57,15 @@ class command_parser
 public:
     command_parser(drivers::gpio::gpio_driver &_gpio, drivers::i2c::i2c_driver &_i2c);
 
-    std::optional<std::span<uint8_t>> parse_and_execute(command& cmd);
+    std::span<uint8_t> parse_and_execute(command& cmd);
+    void set_status(command_status status, uint32_t payload_length);
+
     void execute_gpio_set_command(std::span<uint8_t> payload);
     void execute_gpio_get_command();
     void execute_i2c_set_speed_command(std::span<uint8_t> payload);
     void execute_i2c_set_address_command(std::span<uint8_t> payload);
     void execute_i2c_set_timeout_command(std::span<uint8_t> payload);
-    command_status execute_i2c_read_command(std::span<uint8_t> payload);
+    void execute_i2c_read_command(std::span<uint8_t> payload);
     void execute_i2c_write_command(std::span<uint8_t> payload);
 
 private:
@@ -71,7 +73,8 @@ private:
     drivers::i2c::i2c_driver &i2c;
 
     uint8_t data_buffer[64 * 1024] = {};
-    // uint8_t data_length = 0;
+    uint8_t *payload_buffer = &data_buffer[1];
+    uint32_t data_length = 0;
 };
 
 }  // namespace lib::commands

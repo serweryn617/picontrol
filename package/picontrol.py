@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
-from serial_comm import SerialCommunicator as UsbGpioController
-import i2c_commands
+from serial_comm import SerialCommunicator
 import struct
 import defs
+from gpio_commands import gpio_set, gpio_get
+from i2c_commands import i2c_set_address, i2c_read
 
 def make_gpio_masks(gpios_on, gpios_off):
     pin_mask = 0
@@ -40,7 +41,7 @@ def main():
 
     args = parser.parse_args()
 
-    with UsbGpioController() as controller:
+    with SerialCommunicator() as communicator:
         if args.command == 'gpio' and args.gpio_command == "set":
             pin_mask, pin_values = make_gpio_masks(args.on, args.off)
 
@@ -48,21 +49,23 @@ def main():
                 print("No pins specified.")
                 return
 
-            controller.set_pins(pin_mask, pin_values)
+            communicator.execute(gpio_set(pin_mask, pin_values))
 
         if args.command == 'gpio' and args.gpio_command == "get":
-            pin_state = controller.get_pins()
+            pin_state = communicator.execute(gpio_get())
             print(bin(pin_state))
 
         if args.command == 'i2c' and args.i2c_command == "scan":
             print("I2C Bus Scan")
             print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end='')
 
+            communicator.serial.timeout = 0.001
+
             for addr in range(1 << 7):
                 if (addr % 16 == 0):
                     print(f"\n{addr:02x} ", end="")
-                controller.send_data(i2c_commands.make_i2c_set_address_command(addr))
-                result = controller.send_data(i2c_commands.make_i2c_read_command(length=1))
+                communicator.execute(i2c_set_address(addr))
+                result = communicator.execute(i2c_read(length=1))
                 print(f"{'.' if result == defs.CommandStatus.I2C_ERROR else '@'} ", end="")
             print()
 
