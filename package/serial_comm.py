@@ -8,39 +8,41 @@ def find_cdc_port(vid, pid):
             return port.device  # e.g. '/dev/ttyACM0' or 'COM3'
     raise RuntimeError("USB device not found")
 
-class CdcGpioController:
+class SerialCommunicator:
     def __init__(self, vid=defs.VENDOR_ID, pid=defs.PRODUCT_ID):
         self.port = find_cdc_port(vid, pid)
 
+    def __enter__(self):
+        self.serial = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.serial.close()
+
+    # TODO: move set/get pins to separate class
     def set_pins(self, pin_mask: int, pin_values: int):
-        """
-        Send a GPIO command with:
-        [command_type(1 byte), pin_mask(4 bytes), pin_values(4 bytes)]
-        """
         payload = struct.pack('<BII', defs.CommandType.GPIO_SET, pin_mask, pin_values)
 
-        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
-        ser.write(payload)
-        ser.close()
+        self.send_data(payload)
 
     def get_pins(self):
         payload = struct.pack('<B', defs.CommandType.GPIO_GET)
 
-        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
-        ser.write(payload)
-        result = ser.read(4)
+        self.serial.write(payload)
+        result = self.serial.read(4)
         result = struct.unpack('<I', result)[0]
-        ser.close()
         return result
 
-    def send_data(self, payload):
-        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
-        ser.write(payload)
-        ser.close()
+    def send_data(self, payload, expected_status=None):
+        self.serial.write(payload)
+        self.serial.flush()
+        result = self.serial.read(1)
+        result = struct.unpack('<B', result)[0]
 
-    def send_receive_data(self, write_payload, read_length):
-        ser = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
-        ser.write(write_payload)
-        result = ser.read(read_length)
-        ser.close()
+        if expected_status is not None and result != expected_status:
+            raise RuntimeError("Incorrect status")
+
+        # self.serial.reset_input_buffer()
+        # self.serial.reset_output_buffer()
+
         return result

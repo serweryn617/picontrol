@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from serial_comm import CdcGpioController as UsbGpioController
+from serial_comm import SerialCommunicator as UsbGpioController
 import i2c_commands
 import struct
 import defs
@@ -40,36 +40,31 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == 'gpio' and args.gpio_command == "set":
-        controller = UsbGpioController()
+    with UsbGpioController() as controller:
+        if args.command == 'gpio' and args.gpio_command == "set":
+            pin_mask, pin_values = make_gpio_masks(args.on, args.off)
 
-        pin_mask, pin_values = make_gpio_masks(args.on, args.off)
+            if pin_mask == 0:
+                print("No pins specified.")
+                return
 
-        if pin_mask == 0:
-            print("No pins specified.")
-            return
+            controller.set_pins(pin_mask, pin_values)
 
-        controller.set_pins(pin_mask, pin_values)
+        if args.command == 'gpio' and args.gpio_command == "get":
+            pin_state = controller.get_pins()
+            print(bin(pin_state))
 
-    if args.command == 'gpio' and args.gpio_command == "get":
-        controller = UsbGpioController()
-        pin_state = controller.get_pins()
-        print(bin(pin_state))
+        if args.command == 'i2c' and args.i2c_command == "scan":
+            print("I2C Bus Scan")
+            print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end='')
 
-    if args.command == 'i2c' and args.i2c_command == "scan":
-        controller = UsbGpioController()
-
-        print("I2C Bus Scan")
-        print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end='')
-
-        for addr in range(1 << 7):
-            if (addr % 16 == 0):
-                print(f"\n{addr:02x} ", end="")
-            controller.send_data(i2c_commands.make_i2c_set_address_command(addr))
-            result = controller.send_receive_data(i2c_commands.make_i2c_read_command(1), 1)
-            result = struct.unpack('<B', result)[0]
-            print(f"{'.' if result == defs.CommandStatus.I2C_ERROR else '@'} ", end="")
-        print()
+            for addr in range(1 << 7):
+                if (addr % 16 == 0):
+                    print(f"\n{addr:02x} ", end="")
+                controller.send_data(i2c_commands.make_i2c_set_address_command(addr))
+                result = controller.send_data(i2c_commands.make_i2c_read_command(length=1))
+                print(f"{'.' if result == defs.CommandStatus.I2C_ERROR else '@'} ", end="")
+            print()
 
 
 if __name__ == "__main__":
