@@ -1,6 +1,7 @@
-from defs import CommandType, CommandStatus
 import struct
+
 from command import Command
+from defs import CommandStatus, CommandType
 
 
 class i2c_set_address(Command):
@@ -8,12 +9,12 @@ class i2c_set_address(Command):
         self.address = address
 
     def write_payload(self):
-        return struct.pack('<BB', CommandType.I2C_SET_ADDRESS, self.address)
+        return struct.pack("<BB", CommandType.I2C_SET_ADDRESS, self.address)
 
 
 class i2c_check_ack(Command):
     def write_payload(self):
-        return struct.pack('<BI', CommandType.I2C_READ, 1)
+        return struct.pack("<BI", CommandType.I2C_READ, 1)
 
     def read_length(self) -> int:
         return 1
@@ -28,7 +29,7 @@ class i2c_read(Command):
         self.length = length
 
     def write_payload(self):
-        return struct.pack('<BI', CommandType.I2C_READ, self.length)
+        return struct.pack("<BI", CommandType.I2C_READ, self.length)
 
     def read_length(self) -> int:
         return 1 + self.length

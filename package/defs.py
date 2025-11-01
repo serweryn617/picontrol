@@ -1,7 +1,8 @@
 from enum import IntEnum
 
-VENDOR_ID = 0xcafe
+VENDOR_ID = 0xCAFE
 PRODUCT_ID = 0x4001
+
 
 class CommandType(IntEnum):
     NONE = 0
@@ -14,6 +15,7 @@ class CommandType(IntEnum):
     I2C_READ = 33
     I2C_WRITE = 34
     SPI = 40
+
 
 class CommandStatus(IntEnum):
     OK = 0

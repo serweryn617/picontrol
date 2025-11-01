@@ -31,3 +31,12 @@ Issues = "https://github.com/serweryn617/picontrol/issues"
 
 [project.scripts]
 picontrol = "picontrol:main"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+]
+
+[tool.black]
+line-length = 160

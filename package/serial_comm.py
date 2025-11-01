@@ -1,6 +1,7 @@
-import serial.tools.list_ports
-import defs
 import struct
+
+import defs
+import serial.tools.list_ports
 from command import Command
 
 

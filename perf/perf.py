@@ -1,5 +1,7 @@
-import serial.tools.list_ports
 import time
+
+import serial.tools.list_ports
+
 
 def find_cdc_port(vid, pid):
     for port in serial.tools.list_ports.comports():
@@ -7,13 +9,14 @@ def find_cdc_port(vid, pid):
             return port.device  # e.g. '/dev/ttyACM0' or 'COM3'
     raise RuntimeError("USB device not found")
 
+
 TOTAL_BYTES = 1 * 1024 * 1024
 TIMEOUT_MS = 1000
 
 print("Testing CDC")
 
 chunk = bytes([0xC6]) * 4096
-port = find_cdc_port(0xcafe, 0x4015)
+port = find_cdc_port(0xCAFE, 0x4015)
 remaining = TOTAL_BYTES
 total_written = 0
 
