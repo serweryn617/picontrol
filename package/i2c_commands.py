@@ -1,4 +1,4 @@
-from defs import CommandType
+from defs import CommandType, CommandStatus
 import struct
 from command import Command
 
@@ -9,6 +9,18 @@ class i2c_set_address(Command):
 
     def write_payload(self):
         return struct.pack('<BB', CommandType.I2C_SET_ADDRESS, self.address)
+
+
+class i2c_check_ack(Command):
+    def write_payload(self):
+        return struct.pack('<BI', CommandType.I2C_READ, 1)
+
+    def read_length(self) -> int:
+        return 1
+
+    def parse_response(self, response: bytes, expected_status: None | int = None):
+        status = response[0]
+        return status == CommandStatus.OK
 
 
 class i2c_read(Command):
@@ -25,6 +37,6 @@ class i2c_read(Command):
         status, *payload = response
         if expected_status is not None and status != expected_status:
             raise RuntimeError("Incorrect status")
-        # if len(payload) != self.length:
-        #     raise RuntimeError(f"Incorrect read length {len(payload)}, expected {self.length}")
-        return status
+        if len(payload) != self.length:
+            raise RuntimeError(f"Incorrect read length {len(payload)}, expected {self.length}")
+        return payload

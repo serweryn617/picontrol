@@ -5,7 +5,7 @@ from serial_comm import SerialCommunicator
 import struct
 import defs
 from gpio_commands import gpio_set, gpio_get
-from i2c_commands import i2c_set_address, i2c_read
+from i2c_commands import i2c_set_address, i2c_read, i2c_check_ack
 
 def make_gpio_masks(gpios_on, gpios_off):
     pin_mask = 0
@@ -59,14 +59,12 @@ def main():
             print("I2C Bus Scan")
             print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end='')
 
-            communicator.serial.timeout = 0.001
-
             for addr in range(1 << 7):
                 if (addr % 16 == 0):
                     print(f"\n{addr:02x} ", end="")
                 communicator.execute(i2c_set_address(addr))
-                result = communicator.execute(i2c_read(length=1))
-                print(f"{'.' if result == defs.CommandStatus.I2C_ERROR else '@'} ", end="")
+                result = communicator.execute(i2c_check_ack())
+                print(f"{'@' if result else '.'} ", end="")
             print()
 
 
