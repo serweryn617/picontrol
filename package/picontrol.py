@@ -8,6 +8,7 @@ from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address
 from serial_comm import SerialCommunicator
 from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
+from flash_commands import flash_read, flash_sector_erase, flash_page_program
 
 
 def make_gpio_masks(gpios_on, gpios_off):
@@ -110,12 +111,12 @@ def main():
                 communicator.execute(spi_write(bytes(args.data)))
 
         if args.command == "flash":
-            if args.spi_command == "read":
-                communicator.execute()
-            if args.spi_command == "sector_erase":
-                communicator.execute()
-            if args.spi_command == "page_program":
-                communicator.execute()
+            if args.flash_command == "read":
+                communicator.execute(flash_read(args.address, args.length))
+            if args.flash_command == "sector_erase":
+                communicator.execute(flash_sector_erase(args.address))
+            if args.flash_command == "page_program":
+                communicator.execute(flash_page_program(args.address, bytes(args.data)))
 
 
 if __name__ == "__main__":
