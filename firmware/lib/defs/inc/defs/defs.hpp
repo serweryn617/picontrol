@@ -26,6 +26,15 @@ namespace gpio {
 constexpr std::array<uint8_t, 8> gpios = { 8, 9, 10, 11, 12, 13, 14, 15 };
 }
 
+namespace spi {
+constexpr uint8_t inst = 0;
+constexpr uint8_t rx = 16;
+constexpr uint8_t cs = 17;
+constexpr uint8_t sck = 18;
+constexpr uint8_t tx = 19;
+constexpr uint32_t default_speed = 50'000'000;  // 50MHz
+}
+
 constexpr uint8_t led = 25;
 
 }  // namespace defs

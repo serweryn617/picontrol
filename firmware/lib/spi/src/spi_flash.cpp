@@ -1,0 +1,61 @@
+#include "spi/spi_driver.h"
+
+namespace drivers::spi {
+
+static constexpr uint32_t flash_page_size = 256;
+static constexpr uint32_t flash_sector_size = 4096;
+
+static constexpr uint8_t flash_cmd_page_program = 0x02;
+static constexpr uint8_t flash_cmd_read = 0x03;
+static constexpr uint8_t flash_cmd_status = 0x05;
+static constexpr uint8_t flash_cmd_write_en = 0x06;
+static constexpr uint8_t flash_cmd_sector_erase = 0x20;
+
+static constexpr uint8_t flash_status_busy_mask = 0x01;
+
+void spi_driver::flash_read(uint32_t addr, uint8_t *buf, size_t len) {
+  cs_select();
+  uint8_t cmdbuf[4] = { flash_cmd_read, static_cast<uint8_t>(addr >> 16), static_cast<uint8_t>(addr >> 8), static_cast<uint8_t>(addr) };
+  spi_write_blocking(spi_inst_, cmdbuf, 4);
+  spi_read_blocking(spi_inst_, 0, buf, len);
+  cs_deselect();
+}
+
+void spi_driver::flash_write_enable() {
+  cs_select();
+  uint8_t cmd = flash_cmd_write_en;
+  spi_write_blocking(spi_inst_, &cmd, 1);
+  cs_deselect();
+}
+
+void spi_driver::flash_wait_done() {
+  uint8_t status;
+  do {
+    cs_select();
+    uint8_t buf[2] = { flash_cmd_status, 0 };
+    spi_write_read_blocking(spi_inst_, buf, buf, 2);
+    cs_deselect();
+    status = buf[1];
+  } while (status & flash_status_busy_mask);
+}
+
+void spi_driver::flash_sector_erase(uint32_t addr) {
+  uint8_t cmdbuf[4] = { flash_cmd_sector_erase, static_cast<uint8_t>(addr >> 16), static_cast<uint8_t>(addr >> 8), static_cast<uint8_t>(addr) };
+  flash_write_enable();
+  cs_select();
+  spi_write_blocking(spi_inst_, cmdbuf, 4);
+  cs_deselect();
+  flash_wait_done();
+}
+
+void spi_driver::flash_page_program(uint32_t addr, uint8_t data[]) {
+  uint8_t cmdbuf[4] = { flash_cmd_page_program, static_cast<uint8_t>(addr >> 16), static_cast<uint8_t>(addr >> 8), static_cast<uint8_t>(addr) };
+  flash_write_enable();
+  cs_select();
+  spi_write_blocking(spi_inst_, cmdbuf, 4);
+  spi_write_blocking(spi_inst_, data, flash_page_size);
+  cs_deselect();
+  flash_wait_done();
+}
+
+}  // namespace drivers::spi

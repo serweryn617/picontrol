@@ -8,6 +8,7 @@ projects["all"] = {
     "components": [
         "setup",
         "build",
+        "autoformat",
     ],
 }
 
