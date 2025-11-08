@@ -1,8 +1,8 @@
 #ifndef LIB_DEFS_DEFS_HPP
 #define LIB_DEFS_DEFS_HPP
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 
 namespace defs {
 

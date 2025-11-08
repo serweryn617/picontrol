@@ -6,8 +6,7 @@ using namespace drivers::gpio;
 
 namespace lib::commands {
 
-void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
-{
+void command_parser::execute_gpio_set_command(std::span<uint8_t> payload) {
   if (payload.size() != 8) {
     set_status(command_status::parameter_error, 0);
     return;
@@ -20,8 +19,7 @@ void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
   set_status(command_status::ok, 0);
 }
 
-void command_parser::execute_gpio_set_high_z_command(std::span<uint8_t> payload)
-{
+void command_parser::execute_gpio_set_high_z_command(std::span<uint8_t> payload) {
   if (payload.size() != 8) {
     set_status(command_status::parameter_error, 0);
     return;
@@ -34,8 +32,7 @@ void command_parser::execute_gpio_set_high_z_command(std::span<uint8_t> payload)
   set_status(command_status::ok, 0);
 }
 
-void command_parser::execute_gpio_get_command()
-{
+void command_parser::execute_gpio_get_command() {
   uint32_t gpio_state = gpio.get();
   memcpy(payload_buffer, &gpio_state, sizeof(gpio_state));
   set_status(command_status::ok, 4);

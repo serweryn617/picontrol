@@ -29,4 +29,5 @@ projects["clean"] = (
 projects["autoformat"] = (
     "isort .",
     "black .",
+    "git ls-files *.h *.hpp *.c *.cpp | xargs clang-format -i -style=file",
 )

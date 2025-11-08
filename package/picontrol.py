@@ -35,7 +35,7 @@ def main():
     gpio_set_parser = gpio_subparsers.add_parser("set", help="Set GPIO pins")
     gpio_set_parser.add_argument("--on", type=int, nargs="+", help="Pins to set HIGH")
     gpio_set_parser.add_argument("--off", type=int, nargs="+", help="Pins to set LOW")
-    gpio_set_parser.add_argument("--high_z", action='store_true', help="Put ON pins to high Z state instead")
+    gpio_set_parser.add_argument("--high_z", action="store_true", help="Put ON pins to high Z state instead")
     gpio_get_parser = gpio_subparsers.add_parser("get", help="Get GPIO pins")
 
     i2c_parser = subparsers.add_parser("i2c", help="Control I2C")
