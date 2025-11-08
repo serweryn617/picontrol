@@ -7,6 +7,7 @@ import defs
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address
 from serial_comm import SerialCommunicator
+from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
 
 
 def make_gpio_masks(gpios_on, gpios_off):
@@ -36,11 +37,33 @@ def main():
     gpio_set_parser.add_argument("--on", type=int, nargs="+", help="Pins to set HIGH")
     gpio_set_parser.add_argument("--off", type=int, nargs="+", help="Pins to set LOW")
     gpio_set_parser.add_argument("--high_z", action="store_true", help="Put ON pins to high Z state instead")
-    gpio_get_parser = gpio_subparsers.add_parser("get", help="Get GPIO pins")
+    gpio_subparsers.add_parser("get", help="Get GPIO pins")
 
     i2c_parser = subparsers.add_parser("i2c", help="Control I2C")
     i2c_subparsers = i2c_parser.add_subparsers(dest="i2c_command", required=True)
-    i2c_scan_parser = i2c_subparsers.add_parser("scan", help="Scan I2C addresses")
+    i2c_subparsers.add_parser("scan", help="Scan I2C addresses")
+
+    spi_parser = subparsers.add_parser("spi", help="Control raw SPI")
+    spi_subparsers = spi_parser.add_subparsers(dest="spi_command", required=True)
+    spi_set_speed_parser = spi_subparsers.add_parser("set_speed", help="Set SPI speed")
+    spi_set_speed_parser.add_argument("speed", type=int, help="Speed in Hz")
+    spi_subparsers.add_parser("cs_select", help="Activate CS")
+    spi_subparsers.add_parser("cs_deselect", help="Deactivate CS")
+    spi_read_subparser = spi_subparsers.add_parser("read", help="Read from SPI")
+    spi_read_subparser.add_argument("length", type=int, help="Length in bytes to read")
+    spi_write_subparser = spi_subparsers.add_parser("write", help="Write to SPI")
+    spi_write_subparser.add_argument("data", type=int, nargs="+", help="Data to write")
+
+    flash_parser = subparsers.add_parser("flash", help="Control SPI flash")
+    flash_subparsers = flash_parser.add_subparsers(dest="flash_command", required=True)
+    flash_read_subparser = flash_subparsers.add_parser("read", help="Read from SPI flash")
+    flash_read_subparser.add_argument("address", type=int, help="Address to read from")
+    flash_read_subparser.add_argument("length", type=int, help="Length in bytes to read")
+    flash_sector_erase_subparser = flash_subparsers.add_parser("sector_erase", help="Erase flash sector")
+    flash_sector_erase_subparser.add_argument("address", type=int, help="Address of the sector to erase")
+    flash_page_program_subparser = flash_subparsers.add_parser("page_program", help="Program flash page")
+    flash_page_program_subparser.add_argument("address", type=int, help="Address to write to")
+    flash_page_program_subparser.add_argument("data", type=int, nargs="+", help="Data to write")
 
     args = parser.parse_args()
 
@@ -72,6 +95,27 @@ def main():
                 result = communicator.execute(i2c_check_ack())
                 print(f"{'@' if result else '.'} ", end="")
             print()
+
+        if args.command == "spi":
+            if args.spi_command == "set_speed":
+                communicator.execute(spi_set_speed(args.speed))
+            if args.spi_command == "cs_select":
+                communicator.execute(spi_cs_select())
+            if args.spi_command == "cs_deselect":
+                communicator.execute(spi_cs_deselect())
+            if args.spi_command == "read":
+                data = communicator.execute(spi_read(args.length))
+                print(data)
+            if args.spi_command == "write":
+                communicator.execute(spi_write(bytes(args.data)))
+
+        if args.command == "flash":
+            if args.spi_command == "read":
+                communicator.execute()
+            if args.spi_command == "sector_erase":
+                communicator.execute()
+            if args.spi_command == "page_program":
+                communicator.execute()
 
 
 if __name__ == "__main__":

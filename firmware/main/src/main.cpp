@@ -7,19 +7,23 @@
 #include "defs/defs.hpp"
 #include "gpio/gpio_driver.h"
 #include "i2c/i2c_driver.h"
+#include "spi/spi_driver.h"
 #include "tinyusb.hpp"
 #include "uart/uart_driver.h"
 
-using namespace drivers::i2c;
-using namespace drivers::uart;
 using namespace drivers::gpio;
+using namespace drivers::i2c;
+using namespace drivers::spi;
+using namespace drivers::uart;
 using namespace lib::commands;
 
-tiny_usb tusb;
-i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::default_address, defs::i2c::default_speed, defs::i2c::default_timeout_us);
-uart_driver uart(defs::uart::inst, defs::uart::rx, defs::uart::tx, defs::uart::baudrate);
 gpio_driver gpio;
-command_parser parser(gpio, i2c);
+i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::default_address, defs::i2c::default_speed, defs::i2c::default_timeout_us);
+spi_driver spi(defs::spi::inst, defs::spi::rx, defs::spi::tx, defs::spi::sck, defs::spi::cs, defs::spi::default_speed);
+tiny_usb tusb;
+uart_driver uart(defs::uart::inst, defs::uart::rx, defs::uart::tx, defs::uart::baudrate);
+
+command_parser parser(gpio, i2c, spi);
 
 void led_blinking_task(void) {
   static uint32_t blink_interval_ms = 500;
@@ -47,9 +51,10 @@ void led_blinking_task(void) {
 int main() {
   stdio_init_all();
 
-  tusb.init();
   gpio.init();
   i2c.init();
+  spi.init();
+  tusb.init();
 
   while (true) {
     led_blinking_task();

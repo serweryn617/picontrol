@@ -4,12 +4,14 @@
 
 using namespace drivers::gpio;
 using namespace drivers::i2c;
+using namespace drivers::spi;
 
 namespace lib::commands {
 
-command_parser::command_parser(gpio_driver &_gpio, i2c_driver &_i2c)
+command_parser::command_parser(gpio_driver &_gpio, i2c_driver &_i2c, spi_driver &_spi)
   : gpio(_gpio)
-  , i2c(_i2c) {}
+  , i2c(_i2c)
+  , spi(_spi) {}
 
 uint32_t command_parser::word(std::span<uint8_t> data, size_t word_num) {
   word_num *= 4;
@@ -51,6 +53,38 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
 
     case command_type::i2c_write:
       execute_i2c_write_command(cmd.payload);
+      break;
+
+    case command_type::spi_set_speed:
+      execute_spi_set_speed_command(cmd.payload);
+      break;
+
+    case command_type::spi_cs_select:
+      execute_spi_cs_select_command();
+      break;
+
+    case command_type::spi_cs_deselect:
+      execute_spi_cs_deselect_command();
+      break;
+
+    case command_type::spi_read:
+      execute_spi_read_command(cmd.payload);
+      break;
+
+    case command_type::spi_write:
+      execute_spi_write_command(cmd.payload);
+      break;
+
+    case command_type::flash_read:
+      execute_flash_read(cmd.payload);
+      break;
+
+    case command_type::flash_sector_erase:
+      execute_flash_sector_erase(cmd.payload);
+      break;
+
+    case command_type::flash_page_program:
+      execute_flash_page_program(cmd.payload);
       break;
 
     default:

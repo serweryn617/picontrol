@@ -8,6 +8,7 @@ target_link_libraries(${PROJECT_NAME}
     gpio_driver
     i2c_driver
     pico_stdlib
+    spi_driver
     tinyusb
     tinyusb_board
     tinyusb_device
