@@ -1,5 +1,6 @@
 add_library(commands STATIC
     src/commands.cpp
+    src/gpio.cpp
 )
 
 target_include_directories(commands PUBLIC

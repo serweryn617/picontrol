@@ -13,6 +13,11 @@ class gpio_set(Command):
         return struct.pack("<BII", CommandType.GPIO_SET, self.pin_mask, self.pin_values)
 
 
+class gpio_set_high_z(gpio_set):
+    def write_payload(self):
+        return struct.pack("<BII", CommandType.GPIO_SET_HIGH_Z, self.pin_mask, self.pin_values)
+
+
 class gpio_get(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.GPIO_GET)

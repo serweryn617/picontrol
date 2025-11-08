@@ -5,20 +5,20 @@
 using namespace drivers::gpio;
 using namespace drivers::i2c;
 
-static constexpr uint32_t word(std::span<uint8_t> data, size_t word_num = 0) {
-  word_num *= 4;
-  return static_cast<uint32_t>(data[word_num]) |
-    (static_cast<uint32_t>(data[word_num + 1]) << 8) |
-    (static_cast<uint32_t>(data[word_num + 2]) << 16) |
-    (static_cast<uint32_t>(data[word_num + 3]) << 24);
-}
-
 namespace lib::commands {
 
 command_parser::command_parser(gpio_driver &_gpio, i2c_driver &_i2c)
   : gpio(_gpio)
   , i2c(_i2c)
 {
+}
+
+uint32_t command_parser::word(std::span<uint8_t> data, size_t word_num) {
+  word_num *= 4;
+  return static_cast<uint32_t>(data[word_num]) |
+    (static_cast<uint32_t>(data[word_num + 1]) << 8) |
+    (static_cast<uint32_t>(data[word_num + 2]) << 16) |
+    (static_cast<uint32_t>(data[word_num + 3]) << 24);
 }
 
 std::span<uint8_t> command_parser::parse_and_execute(command& cmd)
@@ -28,6 +28,10 @@ std::span<uint8_t> command_parser::parse_and_execute(command& cmd)
   switch (cmd.type) {
   case command_type::gpio_set:
     execute_gpio_set_command(cmd.payload);
+    break;
+
+  case command_type::gpio_set_high_z:
+    execute_gpio_set_high_z_command(cmd.payload);
     break;
 
   case command_type::gpio_get:
@@ -65,27 +69,6 @@ void command_parser::set_status(command_status status, uint32_t payload_length)
 {
   data_buffer[0] = static_cast<uint8_t>(status);
   data_length = 1 + payload_length;
-}
-
-void command_parser::execute_gpio_set_command(std::span<uint8_t> payload)
-{
-  if (payload.size() != 8) {
-    set_status(command_status::parameter_error, 0);
-    return;
-  }
-
-  uint32_t mask = word(payload, 0);
-  uint32_t value = word(payload, 1);
-
-  gpio.put_masked(mask, value);
-  set_status(command_status::ok, 0);
-}
-
-void command_parser::execute_gpio_get_command()
-{
-  uint32_t gpio_state = gpio.get();
-  memcpy(payload_buffer, &gpio_state, sizeof(gpio_state));
-  set_status(command_status::ok, 4);
 }
 
 void command_parser::execute_i2c_set_speed_command(std::span<uint8_t> payload)

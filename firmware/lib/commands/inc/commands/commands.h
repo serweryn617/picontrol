@@ -12,7 +12,8 @@ namespace lib::commands {
 enum class command_type : uint8_t {
     none = 0,
     gpio_set = 10,
-    gpio_get = 11,
+    gpio_set_high_z = 11,
+    gpio_get = 12,
     uart = 20,
     i2c_set_speed = 30,
     i2c_set_address = 31,
@@ -61,6 +62,7 @@ public:
     void set_status(command_status status, uint32_t payload_length);
 
     void execute_gpio_set_command(std::span<uint8_t> payload);
+    void execute_gpio_set_high_z_command(std::span<uint8_t> payload);
     void execute_gpio_get_command();
     void execute_i2c_set_speed_command(std::span<uint8_t> payload);
     void execute_i2c_set_address_command(std::span<uint8_t> payload);
@@ -75,6 +77,8 @@ private:
     uint8_t data_buffer[64 * 1024] = {};
     uint8_t *payload_buffer = &data_buffer[1];
     uint32_t data_length = 0;
+
+    uint32_t word(std::span<uint8_t> data, size_t word_num = 0);
 };
 
 }  // namespace lib::commands

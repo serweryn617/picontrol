@@ -7,7 +7,8 @@ PRODUCT_ID = 0x4001
 class CommandType(IntEnum):
     NONE = 0
     GPIO_SET = 10
-    GPIO_GET = 11
+    GPIO_SET_HIGH_Z = 11
+    GPIO_GET = 12
     UART = 20
     I2C_SET_SPEED = 30
     I2C_SET_ADDRESS = 31

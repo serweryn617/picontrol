@@ -28,6 +28,25 @@ void gpio_driver::put_masked(uint32_t mask, uint32_t value)
     }
 
     gpio_put_masked(pin_mask, val_mask);
+    gpio_set_dir_masked(pin_mask, 0xFFFFFFFF);
+}
+
+void gpio_driver::put_high_z_masked(uint32_t mask, uint32_t value)
+{
+    uint32_t pin_mask = 0;
+    uint32_t dir_mask = 0;  // 0 - input, 1 - output
+
+    for (uint32_t i = 0; i < defs::gpio::gpios.size(); i++)
+    {
+        bool pin_i_mask = (mask >> i) & 0b1;
+        bool pin_i_dir = !((value >> i) & 0b1);
+
+        pin_mask |= pin_i_mask << defs::gpio::gpios[i];
+        dir_mask |= pin_i_dir << defs::gpio::gpios[i];
+    }
+
+    gpio_put_masked(pin_mask, 0);
+    gpio_set_dir_masked(pin_mask, dir_mask);
 }
 
 uint32_t gpio_driver::get()
