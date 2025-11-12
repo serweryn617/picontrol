@@ -75,6 +75,10 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
       execute_spi_write_command(cmd.payload);
       break;
 
+    case command_type::flash_read_status:
+      execute_flash_read_status();
+      break;
+
     case command_type::flash_read:
       execute_flash_read(cmd.payload);
       break;
@@ -83,8 +87,8 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
       execute_flash_sector_erase(cmd.payload);
       break;
 
-    case command_type::flash_page_program:
-      execute_flash_page_program(cmd.payload);
+    case command_type::flash_program:
+      execute_flash_program(cmd.payload);
       break;
 
     default:

@@ -9,7 +9,7 @@
 class tiny_usb {
 private:
   bool ready = false;
-  uint8_t command[64] = {};
+  uint8_t command[1024] = {};
   uint8_t size = 0;
 
 public:

@@ -30,9 +30,10 @@ enum class command_type : uint8_t {
   spi_cs_deselect = 42,
   spi_read = 43,
   spi_write = 44,
-  flash_read = 45,
-  flash_sector_erase = 46,
-  flash_page_program = 47,
+  flash_read_status = 45,
+  flash_read = 47,
+  flash_sector_erase = 48,
+  flash_program = 49,
 };
 
 // TODO
@@ -87,9 +88,10 @@ public:
   void execute_spi_read_command(std::span<uint8_t> payload);
   void execute_spi_write_command(std::span<uint8_t> payload);
 
+  void execute_flash_read_status();
   void execute_flash_read(std::span<uint8_t> payload);
   void execute_flash_sector_erase(std::span<uint8_t> payload);
-  void execute_flash_page_program(std::span<uint8_t> payload);
+  void execute_flash_program(std::span<uint8_t> payload);
 
 private:
   drivers::gpio::gpio_driver &gpio;

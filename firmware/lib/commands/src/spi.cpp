@@ -49,6 +49,11 @@ void command_parser::execute_spi_write_command(std::span<uint8_t> payload) {
   set_status(command_status::ok, 0);
 }
 
+void command_parser::execute_flash_read_status() {
+  spi.flash_read_status(payload_buffer);
+  set_status(command_status::ok, 3);
+}
+
 void command_parser::execute_flash_read(std::span<uint8_t> payload) {
   if (payload.size() != 8) {
     set_status(command_status::parameter_error, 0);
@@ -74,15 +79,16 @@ void command_parser::execute_flash_sector_erase(std::span<uint8_t> payload) {
   set_status(command_status::ok, 0);
 }
 
-void command_parser::execute_flash_page_program(std::span<uint8_t> payload) {
-  if (payload.size() != 4 + 256) {
+void command_parser::execute_flash_program(std::span<uint8_t> payload) {
+  if (payload.size() < 4 + 1) {
     set_status(command_status::parameter_error, 0);
     return;
   }
 
   uint32_t address = word(payload, 0);
+  uint32_t length = payload.size() - 4;
 
-  spi.flash_page_program(address, &payload[4]);
+  spi.flash_program(address, &payload[4], length);
   set_status(command_status::ok, 0);
 }
 

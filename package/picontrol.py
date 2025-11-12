@@ -4,11 +4,11 @@ import argparse
 import struct
 
 import defs
+from flash_commands import flash_program, flash_read, flash_read_status, flash_sector_erase
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address
 from serial_comm import SerialCommunicator
 from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
-from flash_commands import flash_read, flash_sector_erase, flash_page_program
 
 
 def make_gpio_masks(gpios_on, gpios_off):
@@ -57,14 +57,15 @@ def main():
 
     flash_parser = subparsers.add_parser("flash", help="Control SPI flash")
     flash_subparsers = flash_parser.add_subparsers(dest="flash_command", required=True)
+    flash_subparsers.add_parser("read_status", help="Read SPI flash status")
     flash_read_subparser = flash_subparsers.add_parser("read", help="Read from SPI flash")
     flash_read_subparser.add_argument("address", type=int, help="Address to read from")
     flash_read_subparser.add_argument("length", type=int, help="Length in bytes to read")
     flash_sector_erase_subparser = flash_subparsers.add_parser("sector_erase", help="Erase flash sector")
     flash_sector_erase_subparser.add_argument("address", type=int, help="Address of the sector to erase")
-    flash_page_program_subparser = flash_subparsers.add_parser("page_program", help="Program flash page")
-    flash_page_program_subparser.add_argument("address", type=int, help="Address to write to")
-    flash_page_program_subparser.add_argument("data", type=int, nargs="+", help="Data to write")
+    flash_program_subparser = flash_subparsers.add_parser("program", help="Program flash page")
+    flash_program_subparser.add_argument("address", type=int, help="Address to write to")
+    flash_program_subparser.add_argument("data", type=int, nargs="+", help="Data to write")
 
     args = parser.parse_args()
 
@@ -111,12 +112,16 @@ def main():
                 communicator.execute(spi_write(bytes(args.data)))
 
         if args.command == "flash":
+            if args.flash_command == "read_status":
+                status = communicator.execute(flash_read_status())
+                print(status)
             if args.flash_command == "read":
-                communicator.execute(flash_read(args.address, args.length))
+                data = communicator.execute(flash_read(args.address, args.length))
+                print(data)
             if args.flash_command == "sector_erase":
                 communicator.execute(flash_sector_erase(args.address))
-            if args.flash_command == "page_program":
-                communicator.execute(flash_page_program(args.address, bytes(args.data)))
+            if args.flash_command == "program":
+                communicator.execute(flash_program(args.address, bytes(args.data)))
 
 
 if __name__ == "__main__":

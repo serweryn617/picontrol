@@ -24,9 +24,10 @@ class CommandType(IntEnum):
     SPI_CS_DESELECT = 42
     SPI_READ = 43
     SPI_WRITE = 44
-    FLASH_READ = 45
-    FLASH_SECTOR_ERASE = 46
-    FLASH_PAGE_PROGRAM = 47
+    FLASH_READ_STATUS = 45
+    FLASH_READ = 47
+    FLASH_SECTOR_ERASE = 48
+    FLASH_PROGRAM = 49
 
 
 class CommandStatus(IntEnum):
