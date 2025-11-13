@@ -2,6 +2,8 @@
 
 import argparse
 import struct
+import time
+from random import randbytes
 
 import defs
 from flash_commands import flash_program, flash_read, flash_read_status, flash_sector_erase
@@ -66,6 +68,7 @@ def main():
     flash_program_subparser = flash_subparsers.add_parser("program", help="Program flash page")
     flash_program_subparser.add_argument("address", type=int, help="Address to write to")
     flash_program_subparser.add_argument("data", type=int, nargs="+", help="Data to write")
+    flash_subparsers.add_parser("program_random", help="Program flash with 1MB of random data")
 
     args = parser.parse_args()
 
@@ -122,6 +125,16 @@ def main():
                 communicator.execute(flash_sector_erase(args.address))
             if args.flash_command == "program":
                 communicator.execute(flash_program(args.address, bytes(args.data)))
+            if args.flash_command == "program_random":
+                start = time.perf_counter()
+                chunk = 64
+                size = 1024
+                for i in range(size // chunk):
+                    address = i * chunk
+                    communicator.execute(flash_program(address, randbytes(chunk)))
+                end = time.perf_counter()
+                elapsed = end - start
+                print(f"Took {elapsed:.3f} s")
 
 
 if __name__ == "__main__":
