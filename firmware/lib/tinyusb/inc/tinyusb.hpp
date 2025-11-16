@@ -6,11 +6,23 @@
 
 #include "pico/stdlib.h"
 
+enum class State : uint8_t { ReadingTransactionHeader, TransactionHeaderFound, ReadingCommand };
+
+// TODO: Add command reading timeout
+
 class tiny_usb {
 private:
-  bool ready = false;
-  uint8_t command[1024] = {};
-  uint8_t size = 0;
+  uint8_t _transaction_buffer[4 * 1024] = {};
+  uint32_t _size = 0;
+  uint32_t _buffer_pointer = 0;
+
+  bool _command_received = false;
+
+  State _state = State::ReadingTransactionHeader;
+
+  void search_for_transaction_header();
+  void get_payload_size();
+  void get_command();
 
 public:
   tiny_usb();

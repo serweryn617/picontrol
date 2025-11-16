@@ -100,11 +100,11 @@ extern "C" {
 #define CFG_TUD_CDC_NOTIFY 1  // Enable use of notification endpoint
 
 // CDC FIFO size of TX and RX
-#define CFG_TUD_CDC_RX_BUFSIZE 64
-#define CFG_TUD_CDC_TX_BUFSIZE 64
+#define CFG_TUD_CDC_RX_BUFSIZE 512
+#define CFG_TUD_CDC_TX_BUFSIZE 512
 
 // CDC Endpoint transfer buffer size, more is faster
-#define CFG_TUD_CDC_EP_BUFSIZE 64
+#define CFG_TUD_CDC_EP_BUFSIZE 512
 
 #ifdef __cplusplus
 }
