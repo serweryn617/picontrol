@@ -48,6 +48,19 @@ void led_blinking_task(void) {
   led_state = !led_state;
 }
 
+void uart_marker_task(void) {
+  static uint32_t blink_interval_ms = 1'000;
+  static uint32_t start_ms = 0;
+  static uint32_t marker = 0;
+
+  if (board_millis() - start_ms < blink_interval_ms) {
+    return;
+  }
+  start_ms += blink_interval_ms;
+
+  printf("-- Marker %i\n", marker++);
+}
+
 int main() {
   stdio_init_all();
 
@@ -56,8 +69,11 @@ int main() {
   spi.init();
   tusb.init();
 
+  printf("Hello PiControl!");
+
   while (true) {
     led_blinking_task();
+    uart_marker_task();
 
     tusb.device_task();
     tusb.cdc_task();
@@ -68,6 +84,9 @@ int main() {
     }
 
     command cmd(*data);
+
+    printf("Got command %i size %i\n", cmd.type, cmd.payload.size());
+
     auto response = parser.parse_and_execute(cmd);
     tusb.rearm();
     tusb.send_data(response);

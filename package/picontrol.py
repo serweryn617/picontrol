@@ -133,8 +133,8 @@ def main():
                 communicator.execute(flash_program(args.address, bytes(args.data)))
             if args.flash_command == "program_random":
                 start = time.perf_counter()
-                chunk = 64
-                size = 1024
+                chunk = 1024
+                size = 1024**2
                 for i in range(size // chunk):
                     address = i * chunk
                     communicator.execute(flash_program(address, randbytes(chunk)))

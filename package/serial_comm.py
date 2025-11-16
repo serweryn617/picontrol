@@ -24,7 +24,14 @@ class SerialCommunicator:
         self.serial.close()
 
     def execute(self, command: Command):
-        self.serial.write(command.write_payload())
+        magic = 0xBADCAB1E
+        payload = command.write_payload()
+        length = len(payload)
+
+        # print("Writing:")
+        # print(struct.pack("<II", magic, length) + payload)
+
+        self.serial.write(struct.pack("<II", magic, length) + payload)
         self.serial.flush()
 
         read_length = command.read_length()
@@ -36,4 +43,5 @@ class SerialCommunicator:
         self.serial.reset_input_buffer()
         self.serial.reset_output_buffer()
 
-        return response
+        if read_length:
+            return response
