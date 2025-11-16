@@ -6,6 +6,7 @@ import time
 from random import randbytes
 
 import defs
+from command import enter_bootsel
 from flash_commands import flash_program, flash_read, flash_read_status, flash_sector_erase
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address
@@ -33,6 +34,8 @@ def make_gpio_masks(gpios_on, gpios_off):
 def main():
     parser = argparse.ArgumentParser(description="Control GPIOs via USB device.")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("enter_bootsel", help="Enter Pico BOOTSEL mode")
 
     gpio_parser = subparsers.add_parser("gpio", help="Control GPIO pins")
     gpio_subparsers = gpio_parser.add_subparsers(dest="gpio_command", required=True)
@@ -73,6 +76,9 @@ def main():
     args = parser.parse_args()
 
     with SerialCommunicator() as communicator:
+        if args.command == "enter_bootsel":
+            communicator.execute(enter_bootsel())
+
         if args.command == "gpio" and args.gpio_command == "set":
             pin_mask, pin_values = make_gpio_masks(args.on, args.off)
 

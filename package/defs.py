@@ -6,6 +6,7 @@ PRODUCT_ID = 0x4001
 
 class CommandType(IntEnum):
     NONE = 0
+    ENTER_BOOTSEL = 1
 
     GPIO_SET = 10
     GPIO_SET_HIGH_Z = 11

@@ -6,9 +6,11 @@ projects = {}
 
 projects["all"] = {
     "components": [
+        "autoformat",
         "setup",
         "build",
-        "autoformat",
+        "enter_bootsel",
+        "upload",
     ],
 }
 
@@ -31,4 +33,15 @@ projects["autoformat"] = (
     "isort .",
     "black .",
     "git ls-files *.h *.hpp *.c *.cpp | xargs clang-format -i -style=file",
+)
+
+projects["serial"] = ("tio /dev/ttyUSB0",)
+
+projects["enter_bootsel"] = ("picontrol enter_bootsel",)
+
+projects["upload"] = (
+    "timeout 10 bash -c 'while [[ ! -e /dev/disk/by-label/RPI-RP2 ]]; do sleep 0.2; done'",
+    "sudo mount /dev/disk/by-label/RPI-RP2 /mnt",
+    "sudo cp output/pico_start.uf2 /mnt",
+    "sudo umount /mnt",
 )

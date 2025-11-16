@@ -12,6 +12,7 @@ namespace lib::commands {
 
 enum class command_type : uint8_t {
   none = 0,
+  enter_bootsel = 1,
 
   gpio_set = 10,
   gpio_set_high_z = 11,
@@ -71,6 +72,8 @@ public:
 
   std::span<uint8_t> parse_and_execute(command &cmd);
   void set_status(command_status status, uint32_t payload_length);
+
+  void execute_enter_bootsel_command();
 
   void execute_gpio_set_command(std::span<uint8_t> payload);
   void execute_gpio_set_high_z_command(std::span<uint8_t> payload);

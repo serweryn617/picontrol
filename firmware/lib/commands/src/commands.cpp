@@ -1,5 +1,8 @@
 #include "commands/commands.h"
+#include "defs/defs.hpp"
+#include "pico/bootrom.h"
 
+#include <cstdio>
 #include <cstring>
 
 using namespace drivers::gpio;
@@ -23,6 +26,10 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
   set_status(command_status::generic_error, 0);
 
   switch (cmd.type) {
+    case command_type::enter_bootsel:
+      execute_enter_bootsel_command();
+      break;
+
     case command_type::gpio_set:
       execute_gpio_set_command(cmd.payload);
       break;
@@ -101,6 +108,14 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
 void command_parser::set_status(command_status status, uint32_t payload_length) {
   data_buffer[0] = static_cast<uint8_t>(status);
   data_length = 1 + payload_length;
+}
+
+void command_parser::execute_enter_bootsel_command() {
+  printf("execute_enter_bootsel_command\n");
+
+  uint32_t usb_activity_gpio_pin_mask = 1 << defs::led;
+  uint32_t disable_interface_mask = 0;
+  rom_reset_usb_boot(usb_activity_gpio_pin_mask, disable_interface_mask);
 }
 
 void command_parser::execute_i2c_set_speed_command(std::span<uint8_t> payload) {
