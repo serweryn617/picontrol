@@ -12,7 +12,7 @@ enum class State : uint8_t { ReadingTransactionHeader, TransactionHeaderFound, R
 
 class tiny_usb {
 private:
-  uint8_t _transaction_buffer[4 * 1024] = {};
+  uint8_t _transaction_buffer[9 * 1024] = {};
   uint32_t _size = 0;
   uint32_t _buffer_pointer = 0;
 

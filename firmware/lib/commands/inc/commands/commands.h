@@ -101,7 +101,7 @@ private:
   drivers::i2c::i2c_driver &i2c;
   drivers::spi::spi_driver &spi;
 
-  uint8_t data_buffer[64 * 1024] = {};
+  uint8_t data_buffer[9 * 1024] = {};
   uint8_t *payload_buffer = &data_buffer[1];
   uint32_t data_length = 0;
 

@@ -5,3 +5,4 @@ output
 *.pyc
 venv
 *.egg-info/
+docs
