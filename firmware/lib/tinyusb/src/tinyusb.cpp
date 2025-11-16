@@ -35,50 +35,6 @@ void tiny_usb::rearm() {
   _command_received = false;
 }
 
-// void tiny_usb::cdc_task() {
-//   if (tud_cdc_available() < 8) {  // TODO: always read, just discard if too small
-//     return;
-//   }
-
-//   if (_command_received) {
-//     return;
-//   }
-
-//   uint32_t command_magic_received = 0;
-//   uint32_t payload_length_received = 0;
-//   tud_cdc_read(&command_magic_received, sizeof(command_magic_received));
-//   tud_cdc_read(&payload_length_received, sizeof(payload_length_received));
-
-//   bool invalid_magic = command_magic_received != 0xBADCAB1E;
-//   bool payload_too_small = payload_length_received < 1;
-//   bool payload_too_big = payload_length_received > sizeof(_transaction_buffer);
-
-//   if (invalid_magic || payload_too_small || payload_too_big) {
-//     return;
-//   }
-
-//   uint32_t size_to_read = payload_length_received;
-//   uint32_t read_buffer_pointer = 0;
-//   for (uint32_t i = 0; i < 100; i++) {
-//     if (!tud_cdc_available()) {
-//       sleep_ms(1);
-//       continue;
-//     }
-
-//     uint32_t bytes_read = tud_cdc_read(&_transaction_buffer[read_buffer_pointer], size_to_read);
-//     size_to_read -= bytes_read;
-//     read_buffer_pointer += bytes_read;
-
-//     if (size_to_read == 0) {
-//       _size = payload_length_received;
-//       _command_received = true;
-//       break;
-//     }
-//   }
-
-//   // TODO: timeout
-// }
-
 void tiny_usb::send_data(std::span<uint8_t> data) {
   tud_cdc_write(data.data(), data.size());
   tud_cdc_write_flush();
@@ -116,6 +72,7 @@ void tiny_usb::search_for_transaction_header() {
 
   for (; idx < _buffer_pointer - sizeof(transacion_magic); idx++) {
     if (std::memcmp(&_transaction_buffer[idx], &transacion_magic, sizeof(transacion_magic)) == 0) {
+      printf("Got transaction header\n");
       _state = State::TransactionHeaderFound;
       break;
     }
@@ -127,9 +84,11 @@ void tiny_usb::search_for_transaction_header() {
 
 void tiny_usb::get_payload_size() {
   if (_buffer_pointer < 8) {
+    printf("Waiting for payload size\n");
     return;
   }
 
+  printf("Got payload size\n");
   _size = static_cast<uint32_t>(_transaction_buffer[4]) | (static_cast<uint32_t>(_transaction_buffer[5]) << 8) |
           (static_cast<uint32_t>(_transaction_buffer[6]) << 16) | (static_cast<uint32_t>(_transaction_buffer[7]) << 24);
   _state = State::ReadingCommand;
@@ -137,9 +96,11 @@ void tiny_usb::get_payload_size() {
 
 void tiny_usb::get_command() {
   if (_buffer_pointer < 8 + _size) {
+    printf("Waiting for command (%i/%i)\n", _buffer_pointer - 8, _size);
     return;
   }
 
+  printf("Got command\n");
   _command_received = true;
   _state = State::ReadingTransactionHeader;
 }
