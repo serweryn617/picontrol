@@ -4,6 +4,11 @@ import defs
 import serial.tools.list_ports
 from command import Command
 
+TRANSACTION_MAGIC = 0xBADCAB1E
+TRANSACTION_HEADER_SIZE = 8
+MAX_WRITE_LENGTH = 9 * 1024 - TRANSACTION_HEADER_SIZE
+MAX_READ_LENGTH = 9 * 1024
+
 
 def find_cdc_port(vid, pid):
     for port in serial.tools.list_ports.comports():
@@ -24,17 +29,24 @@ class SerialCommunicator:
         self.serial.close()
 
     def execute(self, command: Command):
-        magic = 0xBADCAB1E
         payload = command.write_payload()
         length = len(payload)
-
-        # print("Writing:")
-        # print(struct.pack("<II", magic, length) + payload)
-
-        self.serial.write(struct.pack("<II", magic, length) + payload)
-        self.serial.flush()
-
         read_length = command.read_length()
+
+        if length > MAX_WRITE_LENGTH:
+            raise RuntimeError(
+                f"Total command write length (including any header bytes) can't be longer than {MAX_WRITE_LENGTH/1024}kiB ({MAX_WRITE_LENGTH}B), was {length}B"
+            )
+
+        if read_length > MAX_READ_LENGTH:
+            raise RuntimeError(
+                f"Total command read length (including any status bytes) can't be longer than {MAX_READ_LENGTH/1024}kiB ({MAX_READ_LENGTH}B), was {read_length}B"
+            )
+
+        transaction_header = struct.pack("<II", TRANSACTION_MAGIC, length)
+        assert len(transaction_header) == TRANSACTION_HEADER_SIZE, "Defined value doesn't match"
+        self.serial.write(transaction_header + payload)
+        self.serial.flush()
 
         if read_length:
             response = self.serial.read(read_length)
