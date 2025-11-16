@@ -14,4 +14,5 @@ PUBLIC
     i2c_driver
     pico_stdlib
     spi_driver
+    defs
 )

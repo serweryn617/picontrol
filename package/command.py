@@ -1,7 +1,7 @@
 import struct
 from dataclasses import dataclass
 
-from defs import CommandStatus
+from defs import CommandStatus, CommandType
 
 
 @dataclass
@@ -16,3 +16,11 @@ class Command:
         status = struct.unpack("<B", response)[0]
         if expected_status is not None and status != expected_status:
             raise RuntimeError(f"Incorrect status {status}")
+
+
+class enter_bootsel(Command):
+    def write_payload(self):
+        return struct.pack("<B", CommandType.ENTER_BOOTSEL)
+
+    def read_length(self) -> int:
+        return 0
