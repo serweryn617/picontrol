@@ -1,21 +1,23 @@
-#include "pico/stdlib.h"
-#include <stdio.h>
-
 #include "bsp/board_api.h"
-
 #include "commands/commands.h"
 #include "defs/defs.hpp"
 #include "gpio/gpio_driver.h"
 #include "i2c/i2c_driver.h"
+#include "main/core1_main.hpp"
+#include "pico/multicore.h"
+#include "pico/stdlib.h"
 #include "spi/spi_driver.h"
 #include "tinyusb.hpp"
 #include "uart/uart_driver.h"
+#include "queue/queue.hpp"
+#include <stdio.h>
 
 using namespace drivers::gpio;
 using namespace drivers::i2c;
 using namespace drivers::spi;
 using namespace drivers::uart;
 using namespace lib::commands;
+using namespace lib::queue;
 
 gpio_driver gpio;
 i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::default_address, defs::i2c::default_speed, defs::i2c::default_timeout_us);
@@ -68,6 +70,11 @@ int main() {
   i2c.init();
   spi.init();
   tusb.init();
+
+  g_queue_to_core0.init();
+  g_queue_to_core1.init();
+
+  multicore_launch_core1(core1_main);
 
   printf("Hello PiControl!");
 
