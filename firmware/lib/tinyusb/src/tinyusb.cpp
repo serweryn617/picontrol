@@ -104,3 +104,15 @@ void tiny_usb::get_command() {
   _command_received = true;
   _state = State::ReadingTransactionHeader;
 }
+
+bool tiny_usb::uart_write_available() {
+  return tud_cdc_n_write_available(1) > 0;
+}
+
+void tiny_usb::uart_write_char(char c) {
+  tud_cdc_n_write_char(1, c);
+}
+
+void tiny_usb::uart_write_flush() {
+  tud_cdc_n_write_flush(1);
+}

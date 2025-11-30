@@ -6,10 +6,11 @@
 #include "main/core1_main.hpp"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
+#include "queue/queue.hpp"
 #include "spi/spi_driver.h"
 #include "tinyusb.hpp"
+#include "uart_passthrough/uart_passthrough.h"
 #include "uart/uart_driver.h"
-#include "queue/queue.hpp"
 #include <stdio.h>
 
 using namespace drivers::gpio;
@@ -18,13 +19,14 @@ using namespace drivers::spi;
 using namespace drivers::uart;
 using namespace lib::commands;
 using namespace lib::queue;
+using namespace lib::uart_passthrough;
 
 gpio_driver gpio;
 i2c_driver i2c(defs::i2c::inst, defs::i2c::sda, defs::i2c::scl, defs::i2c::default_address, defs::i2c::default_speed, defs::i2c::default_timeout_us);
 spi_driver spi(defs::spi::inst, defs::spi::rx, defs::spi::tx, defs::spi::sck, defs::spi::cs, defs::spi::default_speed);
 tiny_usb tusb;
 uart_driver uart(defs::uart::inst, defs::uart::rx, defs::uart::tx, defs::uart::baudrate);
-
+uart_passthrough uart_pass(tusb, uart);
 command_parser parser(gpio, i2c, spi);
 
 void led_blinking_task(void) {
@@ -70,6 +72,7 @@ int main() {
   i2c.init();
   spi.init();
   tusb.init();
+  uart.init();
 
   g_queue_to_core0.init();
   g_queue_to_core1.init();
@@ -84,6 +87,7 @@ int main() {
 
     tusb.device_task();
     tusb.cdc_task();
+    uart_pass.uart_passthrough_task();
 
     auto data = tusb.get_data();
     if (!data) {

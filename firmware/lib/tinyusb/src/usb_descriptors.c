@@ -41,9 +41,9 @@
 tusb_desc_device_t const desc_device = { .bLength = sizeof(tusb_desc_device_t),
                                          .bDescriptorType = TUSB_DESC_DEVICE,
                                          .bcdUSB = 0x0200,
-                                         .bDeviceClass = 0x00,
-                                         .bDeviceSubClass = 0x00,
-                                         .bDeviceProtocol = 0x00,
+                                         .bDeviceClass = TUSB_CLASS_MISC,
+                                         .bDeviceSubClass = MISC_SUBCLASS_COMMON,
+                                         .bDeviceProtocol = MISC_PROTOCOL_IAD,
                                          .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
 
                                          .idVendor = 0xCafe,
@@ -74,17 +74,17 @@ enum { ITF_NUM_CDC_0 = 0, ITF_NUM_CDC_0_DATA, ITF_NUM_CDC_1, ITF_NUM_CDC_1_DATA,
 #define EPNUM_CDC_0_OUT 0x02
 #define EPNUM_CDC_0_IN 0x82
 
-#define EPNUM_CDC_1_NOTIF 0x83
-#define EPNUM_CDC_1_OUT 0x04
-#define EPNUM_CDC_1_IN 0x84
+#define EPNUM_CDC_1_NOTIF 0x84
+#define EPNUM_CDC_1_OUT 0x05
+#define EPNUM_CDC_1_IN 0x85
 
 uint8_t const desc_configuration[] = {
   // Config number, interface count, string index, total length, attribute, power in mA
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
 
   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
-  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_0, 4, EPNUM_CDC_0_NOTIF, 16, EPNUM_CDC_0_OUT, EPNUM_CDC_0_IN, 64),
-  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_1, 4, EPNUM_CDC_1_NOTIF, 16, EPNUM_CDC_1_OUT, EPNUM_CDC_1_IN, 64)
+  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_0, 4, EPNUM_CDC_0_NOTIF, 8, EPNUM_CDC_0_OUT, EPNUM_CDC_0_IN, 64),
+  TUD_CDC_DESCRIPTOR(ITF_NUM_CDC_1, 4, EPNUM_CDC_1_NOTIF, 8, EPNUM_CDC_1_OUT, EPNUM_CDC_1_IN, 64)
 };
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
@@ -93,6 +93,23 @@ uint8_t const desc_configuration[] = {
 uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
   (void)index;  // for multiple configurations
   return desc_configuration;
+}
+
+// more device descriptor this time the qualifier
+tusb_desc_device_qualifier_t const desc_device_qualifier = { .bLength = sizeof(tusb_desc_device_t),
+                                                             .bDescriptorType = TUSB_DESC_DEVICE,
+                                                             .bcdUSB = 0x0200,
+
+                                                             .bDeviceClass = TUSB_CLASS_CDC,
+                                                             .bDeviceSubClass = MISC_SUBCLASS_COMMON,
+                                                             .bDeviceProtocol = MISC_PROTOCOL_IAD,
+
+                                                             .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
+                                                             .bNumConfigurations = 0x01,
+                                                             .bReserved = 0x00 };
+
+uint8_t const *tud_descriptor_device_qualifier_cb(void) {
+  return (uint8_t const *)&desc_device_qualifier;
 }
 
 //--------------------------------------------------------------------+
@@ -105,6 +122,8 @@ enum {
   STRID_MANUFACTURER,
   STRID_PRODUCT,
   STRID_SERIAL,
+  STRID_CDC_0,
+  STRID_CDC_1,
 };
 
 // array of pointer to string descriptors
@@ -113,7 +132,8 @@ char const *string_desc_arr[] = {
   "TinyUSB",                     // 1: Manufacturer
   "TinyUSB Device",              // 2: Product
   NULL,                          // 3: Serials will use unique ID if possible
-  "TinyUSB CDC",                 // 4: CDC Interface
+  "PiControl CDC",               // 4: CDC Interface
+  "UART CDC",                    // 5: CDC Interface
 };
 
 static uint16_t _desc_str[32 + 1];

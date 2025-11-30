@@ -12,6 +12,8 @@ public:
 
   void init();
   bool read_line(uint8_t *buffer, uint32_t max_length, uint32_t timeout_ms = 100);
+  bool is_readable();
+  char getc();
 
 private:
   uart_inst_t *uart_inst_;
