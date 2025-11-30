@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 VENDOR_ID = 0xCAFE
-PRODUCT_ID = 0x4001
+PRODUCT_ID = 0x4002
 
 
 class CommandType(IntEnum):
