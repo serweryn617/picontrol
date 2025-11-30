@@ -3,12 +3,20 @@
 
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
+#include <array>
 
 namespace lib::queue {
 
-enum class CoreCommand : uint32_t {
+enum class CoreCommandType : uint8_t {
     none,
     send_key,
+    square_number,
+    div_by_2_number,
+};
+
+struct CoreCommand {
+    CoreCommandType command_type;
+    std::array<uint8_t, 64> payload;
 };
 
 class Queue
