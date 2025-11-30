@@ -24,9 +24,6 @@ class i2c_check_ack(Command):
     def write_payload(self):
         return struct.pack("<BI", CommandType.I2C_READ, 1)
 
-    def read_length(self) -> int:
-        return 1
-
     def parse_response(self, response: bytes, expected_status: None | int = None):
         status = response[0]
         return status == CommandStatus.OK
