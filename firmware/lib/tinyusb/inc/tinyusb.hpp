@@ -34,6 +34,10 @@ public:
   std::optional<std::span<uint8_t>> get_data();
   void send_data(std::span<uint8_t> data);
   void rearm();
+
+  bool uart_write_available();
+  void uart_write_char(char c);
+  void uart_write_flush();
 };
 
 #endif  // LIB_TINYUSB_HPP

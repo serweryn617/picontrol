@@ -38,4 +38,12 @@ bool uart_driver::read_line(uint8_t *buffer, uint32_t max_length, uint32_t timeo
   return false;
 }
 
+bool uart_driver::is_readable() {
+  return uart_is_readable(uart_inst_);
+}
+
+char uart_driver::getc() {
+  return uart_getc(uart_inst_);
+}
+
 }  // namespace drivers::uart

@@ -10,7 +10,7 @@ namespace uart {
 constexpr uint8_t inst = 1;
 constexpr uint8_t tx = 4;
 constexpr uint8_t rx = 5;
-constexpr uint32_t baudrate = 9600;
+constexpr uint32_t baudrate = 115200;
 }  // namespace uart
 
 namespace i2c {
