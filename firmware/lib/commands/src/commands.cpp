@@ -148,7 +148,7 @@ void command_parser::execute_i2c_set_timeout_command(std::span<uint8_t> payload)
 
   uint32_t timeout = word(payload, 0);
 
-  i2c.set_address(timeout);
+  i2c.set_timeout(timeout);
   set_status(command_status::ok, 0);
 }
 

@@ -85,7 +85,7 @@ int main() {
 
     command cmd(*data);
 
-    printf("Got command %i size %i\n", cmd.type, cmd.payload.size());
+    // printf("Got command %i size %i\n", cmd.type, cmd.payload.size());
 
     auto response = parser.parse_and_execute(cmd);
     tusb.rearm();

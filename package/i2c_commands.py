@@ -12,6 +12,14 @@ class i2c_set_address(Command):
         return struct.pack("<BB", CommandType.I2C_SET_ADDRESS, self.address)
 
 
+class i2c_set_timeout(Command):
+    def __init__(self, timeout: int):
+        self.timeout = timeout
+
+    def write_payload(self):
+        return struct.pack("<BI", CommandType.I2C_SET_TIMEOUT, self.timeout)
+
+
 class i2c_check_ack(Command):
     def write_payload(self):
         return struct.pack("<BI", CommandType.I2C_READ, 1)

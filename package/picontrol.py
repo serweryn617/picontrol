@@ -9,7 +9,7 @@ import defs
 from command import enter_bootsel
 from flash_commands import flash_program, flash_read, flash_read_status, flash_sector_erase
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
-from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address
+from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_timeout
 from serial_comm import SerialCommunicator
 from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
 
@@ -98,7 +98,7 @@ def main():
         if args.command == "i2c" and args.i2c_command == "scan":
             print("I2C Bus Scan")
             print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end="")
-
+            communicator.execute(i2c_set_timeout(500))
             for addr in range(1 << 7):
                 if addr % 16 == 0:
                     print(f"\n{addr:02x} ", end="")
