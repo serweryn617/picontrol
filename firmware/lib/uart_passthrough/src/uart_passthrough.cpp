@@ -2,6 +2,7 @@
 
 namespace lib::uart_passthrough {
 
+// TODO: Use DMA for better performance? Is better performance needed?
 void uart_passthrough::uart_passthrough_task() {
   int processed = 0;
 
