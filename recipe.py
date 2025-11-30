@@ -35,7 +35,7 @@ projects["autoformat"] = (
     "git ls-files *.h *.hpp *.c *.cpp | xargs clang-format -i -style=file",
 )
 
-projects["serial"] = ("tio /dev/ttyUSB0",)
+projects["serial"] = ("tio /dev/ttyUSB0 -e",)
 
 projects["enter_bootsel"] = ("picontrol enter_bootsel",)
 
