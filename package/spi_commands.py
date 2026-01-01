@@ -47,5 +47,5 @@ class spi_write(Command):
         self.length = len(data)
 
     def write_payload(self):
-        header = struct.pack("<B", CommandType.SPI_READ)
+        header = struct.pack("<B", CommandType.SPI_WRITE)
         return header + self.data
