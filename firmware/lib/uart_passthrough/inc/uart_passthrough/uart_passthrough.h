@@ -10,8 +10,7 @@ class uart_passthrough {
 public:
   uart_passthrough(tiny_usb &tusb, drivers::uart::uart_driver &uart)
     : _tusb(tusb)
-    , _uart(uart)
-  {}
+    , _uart(uart) {}
 
   void uart_passthrough_task();
 

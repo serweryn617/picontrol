@@ -9,8 +9,8 @@
 #include "queue/queue.hpp"
 #include "spi/spi_driver.h"
 #include "tinyusb.hpp"
-#include "uart_passthrough/uart_passthrough.h"
 #include "uart/uart_driver.h"
+#include "uart_passthrough/uart_passthrough.h"
 #include <stdio.h>
 
 using namespace drivers::gpio;
