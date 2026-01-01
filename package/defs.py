@@ -2,7 +2,8 @@ from enum import IntEnum
 
 VENDOR_ID = 0xCAFE
 PRODUCT_ID = 0x4002
-
+PICONTROL_INTERFACE_NUMBER = 0
+SERIAL_INTERFACE_NUMBER = 2
 
 class CommandType(IntEnum):
     NONE = 0
@@ -29,7 +30,6 @@ class CommandType(IntEnum):
     FLASH_READ = 47
     FLASH_SECTOR_ERASE = 48
     FLASH_PROGRAM = 49
-
 
 class CommandStatus(IntEnum):
     OK = 0
