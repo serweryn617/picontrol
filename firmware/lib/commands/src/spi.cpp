@@ -79,6 +79,11 @@ void command_parser::execute_flash_sector_erase(std::span<uint8_t> payload) {
   set_status(command_status::ok, 0);
 }
 
+void command_parser::execute_flash_chip_erase() {
+  spi.flash_chip_erase();
+  set_status(command_status::ok, 0);
+}
+
 void command_parser::execute_flash_program(std::span<uint8_t> payload) {
   if (payload.size() < 4 + 1) {
     set_status(command_status::parameter_error, 0);

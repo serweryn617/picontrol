@@ -31,10 +31,12 @@ enum class command_type : uint8_t {
   spi_cs_deselect = 42,
   spi_read = 43,
   spi_write = 44,
-  flash_read_status = 45,
-  flash_read = 47,
-  flash_sector_erase = 48,
-  flash_program = 49,
+
+  flash_read_status = 50,
+  flash_read = 51,
+  flash_sector_erase = 52,
+  flash_chip_erase = 53,
+  flash_program = 54,
 };
 
 // TODO
@@ -94,6 +96,7 @@ public:
   void execute_flash_read_status();
   void execute_flash_read(std::span<uint8_t> payload);
   void execute_flash_sector_erase(std::span<uint8_t> payload);
+  void execute_flash_chip_erase();
   void execute_flash_program(std::span<uint8_t> payload);
 
 private:

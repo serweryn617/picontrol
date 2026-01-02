@@ -94,6 +94,10 @@ std::span<uint8_t> command_parser::parse_and_execute(command &cmd) {
       execute_flash_sector_erase(cmd.payload);
       break;
 
+    case command_type::flash_chip_erase:
+      execute_flash_chip_erase();
+      break;
+
     case command_type::flash_program:
       execute_flash_program(cmd.payload);
       break;

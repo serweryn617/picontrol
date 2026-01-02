@@ -48,6 +48,11 @@ class flash_sector_erase(Command):
         return struct.pack("<BI", CommandType.FLASH_SECTOR_ERASE, self.address)
 
 
+class flash_chip_erase(Command):
+    def write_payload(self):
+        return struct.pack("<B", CommandType.FLASH_CHIP_ERASE)
+
+
 class flash_program(Command):
     def __init__(self, address: int, data: bytes):
         self.address = address

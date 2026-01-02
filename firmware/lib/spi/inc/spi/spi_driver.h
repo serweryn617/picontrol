@@ -22,6 +22,7 @@ public:
   void flash_write_enable();
   void flash_wait_done();
   void flash_sector_erase(uint32_t addr);
+  void flash_chip_erase();
   void flash_program(uint32_t addr, uint8_t *data, size_t len);
 
 private:

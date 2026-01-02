@@ -7,7 +7,7 @@ from random import randbytes
 
 import defs
 from command import enter_bootsel
-from flash_commands import flash_program, flash_read, flash_read_status, flash_sector_erase
+from flash_commands import flash_chip_erase, flash_program, flash_read, flash_read_status, flash_sector_erase
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_speed, i2c_set_timeout, i2c_write
 from serial_comm import SerialCommunicator
@@ -82,6 +82,7 @@ def main():
     flash_read_subparser.add_argument("length", type=number, help="Length in bytes to read")
     flash_sector_erase_subparser = flash_subparsers.add_parser("sector_erase", help="Erase flash sector")
     flash_sector_erase_subparser.add_argument("address", type=number, help="Address of the sector to erase")
+    flash_subparsers.add_parser("chip_erase", help="Erase flash")
     flash_program_subparser = flash_subparsers.add_parser("program", help="Program flash page")
     flash_program_subparser.add_argument("address", type=number, help="Address to write to")
     flash_program_subparser.add_argument("data", type=number, nargs="+", help="Data to write")
@@ -156,6 +157,8 @@ def main():
                 print(data)
             if args.flash_command == "sector_erase":
                 communicator.execute(flash_sector_erase(args.address))
+            if args.flash_command == "chip_erase":
+                communicator.execute(flash_chip_erase())
             if args.flash_command == "program":
                 communicator.execute(flash_program(args.address, bytes(args.data)))
             if args.flash_command == "program_random":

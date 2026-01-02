@@ -9,6 +9,7 @@ static constexpr uint8_t flash_cmd_page_program = 0x02;
 static constexpr uint8_t flash_cmd_read = 0x03;
 static constexpr uint8_t flash_cmd_write_en = 0x06;
 static constexpr uint8_t flash_cmd_sector_erase = 0x20;
+static constexpr uint8_t flash_cmd_chip_erase = 0xC7;
 
 static constexpr uint8_t flash_status_busy_mask = 0x01;
 
@@ -48,6 +49,7 @@ void spi_driver::flash_write_enable() {
   cs_deselect();
 }
 
+// TODO: add timeout
 void spi_driver::flash_wait_done() {
   uint8_t status;
   do {
@@ -64,6 +66,15 @@ void spi_driver::flash_sector_erase(uint32_t addr) {
   flash_write_enable();
   cs_select();
   spi_write_blocking(spi_inst_, cmdbuf, 4);
+  cs_deselect();
+  flash_wait_done();
+}
+
+void spi_driver::flash_chip_erase() {
+  uint8_t cmd = flash_cmd_chip_erase;
+  flash_write_enable();
+  cs_select();
+  spi_write_blocking(spi_inst_, &cmd, 1);
   cs_deselect();
   flash_wait_done();
 }

@@ -29,7 +29,9 @@ class SerialCommunicator:
         self.port = find_cdc_port(vid, pid, interface)
 
     def __enter__(self):
-        self.serial = serial.Serial(self.port, 115200, timeout=1, write_timeout=1)
+        # NOTE: Some commands, for example flash chip erase take ~20s
+        # TODO: Use specific timeouts per each command
+        self.serial = serial.Serial(self.port, 115200, timeout=60, write_timeout=1)
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
