@@ -161,7 +161,6 @@ void command_parser::execute_i2c_read_command(std::span<uint8_t> payload) {
   uint32_t length = word(payload, 0);
 
   int result = i2c.read_data(payload_buffer, length);
-
   if (result < 0) {
     set_status(command_status::i2c_error, 0);
     return;
@@ -176,8 +175,13 @@ void command_parser::execute_i2c_write_command(std::span<uint8_t> payload) {
     return;
   }
 
-  i2c.write_data(payload.data(), payload.size());
+  int result = i2c.write_data(payload.data(), payload.size());
+  if (result < 0) {
+    set_status(command_status::i2c_error, 0);
+    return;
+  }
   set_status(command_status::ok, 0);
+  return;
 }
 
 }  // namespace lib::commands

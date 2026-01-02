@@ -59,7 +59,8 @@ class i2c_write(Command):
 
 class i2c_check_ack(Command):
     def write_payload(self):
-        return struct.pack("<BI", CommandType.I2C_READ, 1)
+        header = struct.pack("<B", CommandType.I2C_WRITE)
+        return header + b"\x00"
 
     def parse_response(self, response: bytes, expected_status: None | int = None):
         status = response[0]
