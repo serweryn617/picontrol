@@ -10,7 +10,7 @@ from flash_commands import flash_chip_erase, flash_program, flash_read, flash_re
 from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
 from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_speed, i2c_set_timeout, i2c_write
 from ports import find_port
-from serial_comm import SerialCommunicator
+from serial_comm import PiControlComm
 from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
 
 
@@ -100,7 +100,7 @@ def main():
         print("UART passthrough:", uart_passthrough_port)
         return
 
-    with SerialCommunicator(picontrol_port) as communicator:
+    with PiControlComm() as communicator:
         if args.command == "enter_bootsel":
             communicator.execute(enter_bootsel())
 
