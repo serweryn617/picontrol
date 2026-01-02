@@ -170,7 +170,6 @@ void command_parser::execute_i2c_read_command(std::span<uint8_t> payload) {
     return;
   }
   set_status(command_status::ok, result);
-  return;
 }
 
 void command_parser::execute_i2c_write_command(std::span<uint8_t> payload) {
@@ -185,7 +184,6 @@ void command_parser::execute_i2c_write_command(std::span<uint8_t> payload) {
     return;
   }
   set_status(command_status::ok, 0);
-  return;
 }
 
 }  // namespace lib::commands

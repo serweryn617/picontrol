@@ -39,7 +39,6 @@ enum class command_type : uint8_t {
   flash_program = 54,
 };
 
-// TODO
 enum class command_status : uint8_t {
   ok = 0,
   generic_error = 1,

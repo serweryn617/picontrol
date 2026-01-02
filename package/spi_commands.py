@@ -1,7 +1,7 @@
 import struct
 
 from command import Command
-from defs import CommandStatus, CommandType
+from defs import CommandType
 
 
 class spi_set_speed(Command):
