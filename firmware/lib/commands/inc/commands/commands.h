@@ -45,6 +45,7 @@ enum class command_status : uint8_t {
   generic_error = 1,
   parameter_error = 2,
   i2c_error = 3,
+  flash_busy_timeout = 4,
 };
 
 struct command {

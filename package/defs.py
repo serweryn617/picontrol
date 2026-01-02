@@ -40,3 +40,4 @@ class CommandStatus(IntEnum):
     GENERIC_ERROR = 1
     PARAMETER_ERROR = 2
     I2C_ERROR = 3
+    FLASH_BUSY_TIMEOUT = 4

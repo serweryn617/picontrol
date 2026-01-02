@@ -20,10 +20,10 @@ public:
   void flash_read_status(uint8_t *buf);
   void flash_read(uint32_t addr, uint8_t *buf, size_t len);
   void flash_write_enable();
-  void flash_wait_done();
-  void flash_sector_erase(uint32_t addr);
-  void flash_chip_erase();
-  void flash_program(uint32_t addr, uint8_t *data, size_t len);
+  bool flash_wait_done(uint32_t timeout_ms = 1000);
+  bool flash_sector_erase(uint32_t addr);
+  bool flash_chip_erase();
+  bool flash_program(uint32_t addr, uint8_t *data, size_t len);
 
 private:
   spi_inst_t *spi_inst_;
