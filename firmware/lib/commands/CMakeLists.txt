@@ -1,6 +1,7 @@
 add_library(commands STATIC
     src/commands.cpp
     src/gpio.cpp
+    src/i2c.cpp
     src/spi.cpp
 )
 
