@@ -84,10 +84,13 @@ def main():
     flash_read_subparser.add_argument("length", type=number, help="Length in bytes to read")
     flash_sector_erase_subparser = flash_subparsers.add_parser("sector_erase", help="Erase flash sector")
     flash_sector_erase_subparser.add_argument("address", type=number, help="Address of the sector to erase")
-    flash_subparsers.add_parser("chip_erase", help="Erase flash")
+    flash_sector_erase_subparser.add_argument("--timeout", type=number, help="Time to wait for flash to clear the busy bit in ms")
+    flash_chip_erase_subparser = flash_subparsers.add_parser("chip_erase", help="Erase flash")
+    flash_chip_erase_subparser.add_argument("--timeout", type=number, help="Time to wait for flash to clear the busy bit in ms")
     flash_program_subparser = flash_subparsers.add_parser("program", help="Program flash page")
     flash_program_subparser.add_argument("address", type=number, help="Address to write to")
     flash_program_subparser.add_argument("data", type=number, nargs="+", help="Data to write")
+    flash_program_subparser.add_argument("--timeout", type=number, help="Time to wait for flash to clear the busy bit in ms")
     flash_subparsers.add_parser("program_random", help="Program flash with 1MB of random data")
 
     args = parser.parse_args()
@@ -165,11 +168,14 @@ def main():
                 data = communicator.execute(flash_read(args.address, args.length))
                 print(data)
             if args.flash_command == "sector_erase":
-                communicator.execute(flash_sector_erase(args.address))
+                timeout = args.timeout or defs.FlashBusyTimeoutMs.SECTOR_ERASE
+                communicator.execute(flash_sector_erase(args.address, timeout))
             if args.flash_command == "chip_erase":
-                communicator.execute(flash_chip_erase())
+                timeout = args.timeout or defs.FlashBusyTimeoutMs.CHIP_ERASE
+                communicator.execute(flash_chip_erase(timeout))
             if args.flash_command == "program":
-                communicator.execute(flash_program(args.address, bytes(args.data)))
+                timeout = args.timeout or defs.FlashBusyTimeoutMs.PROGRAM
+                communicator.execute(flash_program(args.address, bytes(args.data), timeout))
             if args.flash_command == "program_random":
                 start = time.perf_counter()
                 chunk = 1024

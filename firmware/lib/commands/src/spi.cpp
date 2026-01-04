@@ -68,13 +68,14 @@ void command_parser::execute_flash_read(std::span<uint8_t> payload) {
 }
 
 void command_parser::execute_flash_sector_erase(std::span<uint8_t> payload) {
-  if (payload.size() != 4) {
+  if (payload.size() != 8) {
     set_status(command_status::parameter_error, 0);
     return;
   }
 
   uint32_t address = word(payload, 0);
-  bool ok = spi.flash_sector_erase(address);
+  uint32_t busy_timeout_ms = word(payload, 1);
+  bool ok = spi.flash_sector_erase(address, busy_timeout_ms);
   if (!ok) {
     set_status(command_status::flash_busy_timeout, 0);
     return;
@@ -83,8 +84,14 @@ void command_parser::execute_flash_sector_erase(std::span<uint8_t> payload) {
   set_status(command_status::ok, 0);
 }
 
-void command_parser::execute_flash_chip_erase() {
-  bool ok = spi.flash_chip_erase();
+void command_parser::execute_flash_chip_erase(std::span<uint8_t> payload) {
+  if (payload.size() != 4) {
+    set_status(command_status::parameter_error, 0);
+    return;
+  }
+
+  uint32_t busy_timeout_ms = word(payload, 0);
+  bool ok = spi.flash_chip_erase(busy_timeout_ms);
   if (!ok) {
     set_status(command_status::flash_busy_timeout, 0);
     return;
@@ -100,9 +107,10 @@ void command_parser::execute_flash_program(std::span<uint8_t> payload) {
   }
 
   uint32_t address = word(payload, 0);
-  uint32_t length = payload.size() - 4;
+  uint32_t busy_timeout_ms = word(payload, 1);
+  uint32_t length = payload.size() - 8;
 
-  bool ok = spi.flash_program(address, &payload[4], length);
+  bool ok = spi.flash_program(address, &payload[8], length, busy_timeout_ms);
   if (!ok) {
     set_status(command_status::flash_busy_timeout, 0);
     return;

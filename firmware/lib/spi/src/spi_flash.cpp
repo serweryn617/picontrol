@@ -69,33 +69,32 @@ bool spi_driver::flash_wait_done(uint32_t timeout_ms) {
   return false;
 }
 
-bool spi_driver::flash_sector_erase(uint32_t addr) {
+bool spi_driver::flash_sector_erase(uint32_t addr, uint32_t busy_timeout_ms) {
   uint8_t cmdbuf[4] = { flash_cmd_sector_erase, static_cast<uint8_t>(addr >> 16), static_cast<uint8_t>(addr >> 8), static_cast<uint8_t>(addr) };
   flash_write_enable();
   cs_select();
   spi_write_blocking(spi_inst_, cmdbuf, 4);
   cs_deselect();
-  return flash_wait_done();
+  return flash_wait_done(busy_timeout_ms);
 }
 
-bool spi_driver::flash_chip_erase() {
+bool spi_driver::flash_chip_erase(uint32_t busy_timeout_ms) {
   uint8_t cmd = flash_cmd_chip_erase;
   flash_write_enable();
   cs_select();
   spi_write_blocking(spi_inst_, &cmd, 1);
   cs_deselect();
-  // TODO: Use user param
-  return flash_wait_done(60'000);
+  return flash_wait_done(busy_timeout_ms);
 }
 
-bool spi_driver::flash_program(uint32_t addr, uint8_t *data, size_t len) {
+bool spi_driver::flash_program(uint32_t addr, uint8_t *data, size_t len, uint32_t busy_timeout_ms) {
   uint8_t cmdbuf[4] = { flash_cmd_page_program, static_cast<uint8_t>(addr >> 16), static_cast<uint8_t>(addr >> 8), static_cast<uint8_t>(addr) };
   flash_write_enable();
   cs_select();
   spi_write_blocking(spi_inst_, cmdbuf, 4);
   spi_write_blocking(spi_inst_, data, len);
   cs_deselect();
-  return flash_wait_done();
+  return flash_wait_done(busy_timeout_ms);
 }
 
 }  // namespace drivers::spi

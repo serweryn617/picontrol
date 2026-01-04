@@ -6,6 +6,12 @@ PICONTROL_INTERFACE_NUMBER = 0
 UART_PASSTHROUGH_INTERFACE_NUMBER = 2
 
 
+class FlashBusyTimeoutMs:
+    SECTOR_ERASE = 1_000
+    CHIP_ERASE = 60_000
+    PROGRAM = 1_000
+
+
 class CommandType(IntEnum):
     NONE = 0
     ENTER_BOOTSEL = 1

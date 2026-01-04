@@ -96,7 +96,7 @@ public:
   void execute_flash_read_status();
   void execute_flash_read(std::span<uint8_t> payload);
   void execute_flash_sector_erase(std::span<uint8_t> payload);
-  void execute_flash_chip_erase();
+  void execute_flash_chip_erase(std::span<uint8_t> payload);
   void execute_flash_program(std::span<uint8_t> payload);
 
 private:

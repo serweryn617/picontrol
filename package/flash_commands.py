@@ -1,7 +1,7 @@
 import struct
 
 from command import Command
-from defs import CommandType
+from defs import CommandType, FlashBusyTimeoutMs
 
 
 class flash_read_status(Command):
@@ -41,23 +41,28 @@ class flash_read(Command):
 
 
 class flash_sector_erase(Command):
-    def __init__(self, address: int):
+    def __init__(self, address: int, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.SECTOR_ERASE):
         self.address = address
+        self.flash_busy_timeout_ms = flash_busy_timeout_ms
 
     def write_payload(self):
-        return struct.pack("<BI", CommandType.FLASH_SECTOR_ERASE, self.address)
+        return struct.pack("<BII", CommandType.FLASH_SECTOR_ERASE, self.address, self.flash_busy_timeout_ms)
 
 
 class flash_chip_erase(Command):
+    def __init__(self, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.CHIP_ERASE):
+        self.flash_busy_timeout_ms = flash_busy_timeout_ms
+
     def write_payload(self):
-        return struct.pack("<B", CommandType.FLASH_CHIP_ERASE)
+        return struct.pack("<BI", CommandType.FLASH_CHIP_ERASE, self.flash_busy_timeout_ms)
 
 
 class flash_program(Command):
-    def __init__(self, address: int, data: bytes):
+    def __init__(self, address: int, data: bytes, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.PROGRAM):
         self.address = address
         self.data = data
+        self.flash_busy_timeout_ms = flash_busy_timeout_ms
 
     def write_payload(self):
-        header = struct.pack("<BI", CommandType.FLASH_PROGRAM, self.address)
+        header = struct.pack("<BII", CommandType.FLASH_PROGRAM, self.address, self.flash_busy_timeout_ms)
         return header + self.data
