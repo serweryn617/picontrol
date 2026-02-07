@@ -16,12 +16,18 @@ class SerialCommunicator:
         self.port = port
 
     def __enter__(self):
-        # NOTE: Some commands, for example flash chip erase take ~20s
-        # TODO: Use specific timeouts per each command
-        self.serial = serial.Serial(self.port, 115200, timeout=60, write_timeout=1)
+        self.connect()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.disconnect()
+
+    def connect(self):
+        # NOTE: Some commands, for example flash chip erase take ~20s
+        # TODO: Use specific timeouts per each command
+        self.serial = serial.Serial(self.port, 115200, timeout=60, write_timeout=1)
+
+    def disconnect(self):
         self.serial.close()
 
     def execute(self, command: Command):
