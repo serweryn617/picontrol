@@ -17,7 +17,7 @@ class Command:
         status = struct.unpack("<B", response)[0]
         if expected_status is not None and status != expected_status:
             # TODO: Print better error info
-            raise CommandResponseError(f"Incorrect status {status}", status)
+            raise CommandResponseError(f"Incorrect status", status)
 
 
 class EnterBootsel(Command):
