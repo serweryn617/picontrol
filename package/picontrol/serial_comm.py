@@ -1,11 +1,11 @@
 import struct
 
-import picontrol.defs
 import serial
-from picontrol.command import Command
-from picontrol.ports import find_port
-from picontrol.exceptions import RequestedCommandError
 
+import picontrol.defs
+from picontrol.command import Command
+from picontrol.exceptions import RequestedCommandError
+from picontrol.ports import find_port
 
 TRANSACTION_MAGIC = 0xBADCAB1E
 TRANSACTION_HEADER_SIZE = 8

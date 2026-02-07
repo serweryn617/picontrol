@@ -1,4 +1,5 @@
 import serial.tools.list_ports
+
 from picontrol.exceptions import DeviceNotFoundError
 
 

@@ -3,8 +3,10 @@ class CommandResponseError(Exception):
         self.return_code = return_code
         super().__init__(message)
 
+
 class DeviceNotFoundError(Exception):
     pass
 
+
 class RequestedCommandError(Exception):
-   pass
+    pass

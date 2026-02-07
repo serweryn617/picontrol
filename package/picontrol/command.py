@@ -1,5 +1,6 @@
 import struct
 from dataclasses import dataclass
+
 from picontrol.defs import CommandStatus, CommandType
 from picontrol.exceptions import CommandResponseError
 
@@ -19,7 +20,7 @@ class Command:
             raise CommandResponseError(f"Incorrect status {status}", status)
 
 
-class enter_bootsel(Command):
+class EnterBootsel(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.ENTER_BOOTSEL)
 

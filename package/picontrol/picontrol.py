@@ -5,13 +5,13 @@ import time
 from random import randbytes
 
 import picontrol.defs
-from picontrol.command import enter_bootsel
-from picontrol.flash_commands import flash_chip_erase, flash_program, flash_read, flash_read_status, flash_sector_erase
-from picontrol.gpio_commands import gpio_get, gpio_set, gpio_set_high_z
-from picontrol.i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_speed, i2c_set_timeout, i2c_write
+from picontrol.command import EnterBootsel
+from picontrol.flash_commands import FlashChipErase, FlashProgram, FlashRead, FlashReadStatus, FlashSectorErase
+from picontrol.gpio_commands import GpioGet, GpioSet, GpioSetHighZ
+from picontrol.i2c_commands import I2cCheckAck, I2cRead, I2cSetAddress, I2cSetSpeed, I2cSetTimeout, I2cWrite
 from picontrol.ports import find_port
 from picontrol.serial_comm import PiControlComm
-from picontrol.spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
+from picontrol.spi_commands import SpiCsDeselect, SpiCsSelect, SpiRead, SpiSetSpeed, SpiWrite
 
 
 def make_gpio_masks(gpios_on, gpios_off):
@@ -105,7 +105,7 @@ def main():
 
     with PiControlComm() as communicator:
         if args.command == "enter_bootsel":
-            communicator.execute(enter_bootsel())
+            communicator.execute(EnterBootsel())
 
         if args.command == "gpio":
             if args.gpio_command == "set":
@@ -116,73 +116,73 @@ def main():
                     return
 
                 if args.high_z:
-                    communicator.execute(gpio_set_high_z(pin_mask, pin_values))
+                    communicator.execute(GpioSetHighZ(pin_mask, pin_values))
                 else:
-                    communicator.execute(gpio_set(pin_mask, pin_values))
+                    communicator.execute(GpioSet(pin_mask, pin_values))
 
             if args.gpio_command == "get":
-                pin_state = communicator.execute(gpio_get())
+                pin_state = communicator.execute(GpioGet())
                 print(bin(pin_state))
 
         if args.command == "i2c":
             if args.i2c_command == "set_speed":
-                communicator.execute(i2c_set_speed(args.speed))
+                communicator.execute(I2cSetSpeed(args.speed))
             if args.i2c_command == "set_address":
-                communicator.execute(i2c_set_address(args.address))
+                communicator.execute(I2cSetAddress(args.address))
             if args.i2c_command == "set_timeout":
-                communicator.execute(i2c_set_timeout(args.timeout))
+                communicator.execute(I2cSetTimeout(args.timeout))
             if args.i2c_command == "read":
-                data = communicator.execute(i2c_read(args.length))
+                data = communicator.execute(I2cRead(args.length))
                 print(data)
             if args.i2c_command == "write":
-                communicator.execute(i2c_write(bytes(args.data)))
+                communicator.execute(I2cWrite(bytes(args.data)))
             if args.i2c_command == "scan":
                 print("I2C Bus Scan")
                 print("   0 1 2 3 4 5 6 7 8 9 A B C D E F", end="")
                 for addr in range(1 << 7):
                     if addr % 16 == 0:
                         print(f"\n{addr:02x} ", end="")
-                    communicator.execute(i2c_set_address(addr))
-                    result = communicator.execute(i2c_check_ack())
+                    communicator.execute(I2cSetAddress(addr))
+                    result = communicator.execute(I2cCheckAck())
                     print(f"{'@' if result else '.'} ", end="")
                 print()
 
         if args.command == "spi":
             if args.spi_command == "set_speed":
-                communicator.execute(spi_set_speed(args.speed))
+                communicator.execute(SpiSetSpeed(args.speed))
             if args.spi_command == "cs_select":
-                communicator.execute(spi_cs_select())
+                communicator.execute(SpiCsSelect())
             if args.spi_command == "cs_deselect":
-                communicator.execute(spi_cs_deselect())
+                communicator.execute(SpiCsDeselect())
             if args.spi_command == "read":
-                data = communicator.execute(spi_read(args.length))
+                data = communicator.execute(SpiRead(args.length))
                 print(data)
             if args.spi_command == "write":
-                communicator.execute(spi_write(bytes(args.data)))
+                communicator.execute(SpiWrite(bytes(args.data)))
 
         if args.command == "flash":
             if args.flash_command == "read_status":
-                status = communicator.execute(flash_read_status())
+                status = communicator.execute(FlashReadStatus())
                 print(status)
             if args.flash_command == "read":
-                data = communicator.execute(flash_read(args.address, args.length))
+                data = communicator.execute(FlashRead(args.address, args.length))
                 print(data)
             if args.flash_command == "sector_erase":
                 timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.SECTOR_ERASE
-                communicator.execute(flash_sector_erase(args.address, timeout))
+                communicator.execute(FlashSectorErase(args.address, timeout))
             if args.flash_command == "chip_erase":
                 timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.CHIP_ERASE
-                communicator.execute(flash_chip_erase(timeout))
+                communicator.execute(FlashChipErase(timeout))
             if args.flash_command == "program":
                 timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.PROGRAM
-                communicator.execute(flash_program(args.address, bytes(args.data), timeout))
+                communicator.execute(FlashProgram(args.address, bytes(args.data), timeout))
             if args.flash_command == "program_random":
                 start = time.perf_counter()
                 chunk = 1024
                 size = 1024**2
                 for i in range(size // chunk):
                     address = i * chunk
-                    communicator.execute(flash_program(address, randbytes(chunk)))
+                    communicator.execute(FlashProgram(address, randbytes(chunk)))
                 end = time.perf_counter()
                 elapsed = end - start
                 print(f"Took {elapsed:.3f} s")

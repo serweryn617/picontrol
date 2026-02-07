@@ -5,7 +5,7 @@ from picontrol.defs import CommandType, FlashBusyTimeoutMs
 from picontrol.exceptions import CommandResponseError
 
 
-class flash_read_status(Command):
+class FlashReadStatus(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.FLASH_READ_STATUS)
 
@@ -21,7 +21,7 @@ class flash_read_status(Command):
         return payload
 
 
-class flash_read(Command):
+class FlashRead(Command):
     def __init__(self, address: int, length: int):
         self.address = address
         self.length = length
@@ -41,7 +41,7 @@ class flash_read(Command):
         return payload
 
 
-class flash_sector_erase(Command):
+class FlashSectorErase(Command):
     def __init__(self, address: int, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.SECTOR_ERASE):
         self.address = address
         self.flash_busy_timeout_ms = flash_busy_timeout_ms
@@ -50,7 +50,7 @@ class flash_sector_erase(Command):
         return struct.pack("<BII", CommandType.FLASH_SECTOR_ERASE, self.address, self.flash_busy_timeout_ms)
 
 
-class flash_chip_erase(Command):
+class FlashChipErase(Command):
     def __init__(self, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.CHIP_ERASE):
         self.flash_busy_timeout_ms = flash_busy_timeout_ms
 
@@ -58,7 +58,7 @@ class flash_chip_erase(Command):
         return struct.pack("<BI", CommandType.FLASH_CHIP_ERASE, self.flash_busy_timeout_ms)
 
 
-class flash_program(Command):
+class FlashProgram(Command):
     def __init__(self, address: int, data: bytes, flash_busy_timeout_ms: int = FlashBusyTimeoutMs.PROGRAM):
         self.address = address
         self.data = data

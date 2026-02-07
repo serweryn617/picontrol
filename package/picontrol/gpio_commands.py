@@ -5,7 +5,7 @@ from picontrol.defs import CommandType
 from picontrol.exceptions import CommandResponseError
 
 
-class gpio_set(Command):
+class GpioSet(Command):
     def __init__(self, pin_mask: int, pin_values: int):
         self.pin_mask = pin_mask
         self.pin_values = pin_values
@@ -14,12 +14,12 @@ class gpio_set(Command):
         return struct.pack("<BII", CommandType.GPIO_SET, self.pin_mask, self.pin_values)
 
 
-class gpio_set_high_z(gpio_set):
+class GpioSetHighZ(GpioSet):
     def write_payload(self):
         return struct.pack("<BII", CommandType.GPIO_SET_HIGH_Z, self.pin_mask, self.pin_values)
 
 
-class gpio_get(Command):
+class GpioGet(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.GPIO_GET)
 

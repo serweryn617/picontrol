@@ -5,7 +5,7 @@ from picontrol.defs import CommandStatus, CommandType
 from picontrol.exceptions import CommandResponseError
 
 
-class i2c_set_speed(Command):
+class I2cSetSpeed(Command):
     def __init__(self, speed: int):
         self.speed = speed
 
@@ -13,7 +13,7 @@ class i2c_set_speed(Command):
         return struct.pack("<BI", CommandType.I2C_SET_SPEED, self.speed)
 
 
-class i2c_set_address(Command):
+class I2cSetAddress(Command):
     def __init__(self, address: int):
         self.address = address
 
@@ -21,7 +21,7 @@ class i2c_set_address(Command):
         return struct.pack("<BB", CommandType.I2C_SET_ADDRESS, self.address)
 
 
-class i2c_set_timeout(Command):
+class I2cSetTimeout(Command):
     def __init__(self, timeout: int):
         self.timeout = timeout
 
@@ -29,7 +29,7 @@ class i2c_set_timeout(Command):
         return struct.pack("<BI", CommandType.I2C_SET_TIMEOUT, self.timeout)
 
 
-class i2c_read(Command):
+class I2cRead(Command):
     def __init__(self, length: int):
         self.length = length
 
@@ -48,7 +48,7 @@ class i2c_read(Command):
         return payload
 
 
-class i2c_write(Command):
+class I2cWrite(Command):
     def __init__(self, data: bytes):
         self.data = data
         self.length = len(data)
@@ -58,7 +58,7 @@ class i2c_write(Command):
         return header + self.data
 
 
-class i2c_check_ack(Command):
+class I2cCheckAck(Command):
     def write_payload(self):
         header = struct.pack("<B", CommandType.I2C_WRITE)
         return header + b"\x00"

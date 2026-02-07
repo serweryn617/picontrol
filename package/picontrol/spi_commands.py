@@ -5,7 +5,7 @@ from picontrol.defs import CommandType
 from picontrol.exceptions import CommandResponseError
 
 
-class spi_set_speed(Command):
+class SpiSetSpeed(Command):
     def __init__(self, speed: int):
         self.speed = speed
 
@@ -13,17 +13,17 @@ class spi_set_speed(Command):
         return struct.pack("<BI", CommandType.SPI_SET_SPEED, self.speed)
 
 
-class spi_cs_select(Command):
+class SpiCsSelect(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.SPI_CS_SELECT)
 
 
-class spi_cs_deselect(Command):
+class SpiCsDeselect(Command):
     def write_payload(self):
         return struct.pack("<B", CommandType.SPI_CS_DESELECT)
 
 
-class spi_read(Command):
+class SpiRead(Command):
     def __init__(self, length: int):
         self.length = length
 
@@ -42,7 +42,7 @@ class spi_read(Command):
         return payload
 
 
-class spi_write(Command):
+class SpiWrite(Command):
     def __init__(self, data: bytes):
         self.data = data
         self.length = len(data)
