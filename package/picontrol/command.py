@@ -1,6 +1,7 @@
 import struct
 from dataclasses import dataclass
 from picontrol.defs import CommandStatus, CommandType
+from picontrol.exceptions import CommandResponseError
 
 
 @dataclass
@@ -15,7 +16,7 @@ class Command:
         status = struct.unpack("<B", response)[0]
         if expected_status is not None and status != expected_status:
             # TODO: Print better error info
-            raise RuntimeError(f"Incorrect status {status}")
+            raise CommandResponseError(f"Incorrect status {status}", status)
 
 
 class enter_bootsel(Command):

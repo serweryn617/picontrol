@@ -4,6 +4,8 @@ import picontrol.defs
 import serial
 from picontrol.command import Command
 from picontrol.ports import find_port
+from picontrol.exceptions import RequestedCommandError
+
 
 TRANSACTION_MAGIC = 0xBADCAB1E
 TRANSACTION_HEADER_SIZE = 8
@@ -36,12 +38,12 @@ class SerialCommunicator:
         read_length = command.read_length()
 
         if length > MAX_WRITE_LENGTH:
-            raise RuntimeError(
+            raise RequestedCommandError(
                 f"Total command write length (including any header bytes) can't be longer than {MAX_WRITE_LENGTH/1024}kiB ({MAX_WRITE_LENGTH}B), was {length}B"
             )
 
         if read_length > MAX_READ_LENGTH:
-            raise RuntimeError(
+            raise RequestedCommandError(
                 f"Total command read length (including any status bytes) can't be longer than {MAX_READ_LENGTH/1024}kiB ({MAX_READ_LENGTH}B), was {read_length}B"
             )
 

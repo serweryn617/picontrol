@@ -2,6 +2,7 @@ import struct
 
 from picontrol.command import Command
 from picontrol.defs import CommandType, FlashBusyTimeoutMs
+from picontrol.exceptions import CommandResponseError
 
 
 class flash_read_status(Command):
@@ -14,9 +15,9 @@ class flash_read_status(Command):
     def parse_response(self, response: bytes, expected_status: None | int = None):
         status, *payload = response
         if expected_status is not None and status != expected_status:
-            raise RuntimeError("Incorrect status")
+            raise CommandResponseError("Incorrect status", status)
         if len(payload) != 3:
-            raise RuntimeError(f"Incorrect status length {len(payload)}, expected {self.length}")
+            raise CommandResponseError(f"Incorrect status length {len(payload)}, expected {self.length}", status)
         return payload
 
 
@@ -34,9 +35,9 @@ class flash_read(Command):
     def parse_response(self, response: bytes, expected_status: None | int = None):
         status, *payload = response
         if expected_status is not None and status != expected_status:
-            raise RuntimeError("Incorrect status")
+            raise CommandResponseError("Incorrect status", status)
         if len(payload) != self.length:
-            raise RuntimeError(f"Incorrect read length {len(payload)}, expected {self.length}")
+            raise CommandResponseError(f"Incorrect read length {len(payload)}, expected {self.length}", status)
         return payload
 
 

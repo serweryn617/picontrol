@@ -2,6 +2,7 @@ import struct
 
 from picontrol.command import Command
 from picontrol.defs import CommandType
+from picontrol.exceptions import CommandResponseError
 
 
 class spi_set_speed(Command):
@@ -35,9 +36,9 @@ class spi_read(Command):
     def parse_response(self, response: bytes, expected_status: None | int = None):
         status, *payload = response
         if expected_status is not None and status != expected_status:
-            raise RuntimeError("Incorrect status")
+            raise CommandResponseError("Incorrect status", status)
         if len(payload) != self.length:
-            raise RuntimeError(f"Incorrect read length {len(payload)}, expected {self.length}")
+            raise CommandResponseError(f"Incorrect read length {len(payload)}, expected {self.length}", status)
         return payload
 
 

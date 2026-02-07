@@ -30,7 +30,7 @@ Homepage = "https://github.com/serweryn617/picontrol"
 Issues = "https://github.com/serweryn617/picontrol/issues"
 
 [project.scripts]
-picontrol = "picontrol:main"
+picontrol = "picontrol.picontrol:main"
 
 [project.optional-dependencies]
 dev = [

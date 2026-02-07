@@ -2,6 +2,7 @@ import struct
 
 from picontrol.command import Command
 from picontrol.defs import CommandType
+from picontrol.exceptions import CommandResponseError
 
 
 class gpio_set(Command):
@@ -28,5 +29,5 @@ class gpio_get(Command):
     def parse_response(self, response: bytes, expected_status: None | int = 0):
         status, pins_state = struct.unpack("<BI", response)[:2]
         if expected_status is not None and status != expected_status:
-            raise RuntimeError("Incorrect status")
+            raise CommandResponseError("Incorrect status", status)
         return pins_state
