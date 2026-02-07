@@ -1,9 +1,9 @@
 import struct
 
-import defs
+import picontrol.defs
 import serial
-from command import Command
-from ports import find_port
+from picontrol.command import Command
+from picontrol.ports import find_port
 
 TRANSACTION_MAGIC = 0xBADCAB1E
 TRANSACTION_HEADER_SIZE = 8
@@ -57,5 +57,5 @@ class SerialCommunicator:
 
 class PiControlComm(SerialCommunicator):
     def __init__(self):
-        picontrol_port = find_port(defs.VENDOR_ID, defs.PRODUCT_ID, defs.PICONTROL_INTERFACE_NUMBER)
+        picontrol_port = find_port(picontrol.defs.VENDOR_ID, picontrol.defs.PRODUCT_ID, picontrol.defs.PICONTROL_INTERFACE_NUMBER)
         super().__init__(picontrol_port)

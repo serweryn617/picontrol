@@ -1,7 +1,7 @@
 import struct
 
-from command import Command
-from defs import CommandType, FlashBusyTimeoutMs
+from picontrol.command import Command
+from picontrol.defs import CommandType, FlashBusyTimeoutMs
 
 
 class flash_read_status(Command):

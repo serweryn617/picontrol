@@ -1,7 +1,7 @@
 import struct
 
-from command import Command
-from defs import CommandType
+from picontrol.command import Command
+from picontrol.defs import CommandType
 
 
 class gpio_set(Command):

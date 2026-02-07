@@ -1,7 +1,7 @@
 import struct
 
-from command import Command
-from defs import CommandStatus, CommandType
+from picontrol.command import Command
+from picontrol.defs import CommandStatus, CommandType
 
 
 class i2c_set_speed(Command):

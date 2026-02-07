@@ -4,14 +4,14 @@ import argparse
 import time
 from random import randbytes
 
-import defs
-from command import enter_bootsel
-from flash_commands import flash_chip_erase, flash_program, flash_read, flash_read_status, flash_sector_erase
-from gpio_commands import gpio_get, gpio_set, gpio_set_high_z
-from i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_speed, i2c_set_timeout, i2c_write
-from ports import find_port
-from serial_comm import PiControlComm
-from spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
+import picontrol.defs
+from picontrol.command import enter_bootsel
+from picontrol.flash_commands import flash_chip_erase, flash_program, flash_read, flash_read_status, flash_sector_erase
+from picontrol.gpio_commands import gpio_get, gpio_set, gpio_set_high_z
+from picontrol.i2c_commands import i2c_check_ack, i2c_read, i2c_set_address, i2c_set_speed, i2c_set_timeout, i2c_write
+from picontrol.ports import find_port
+from picontrol.serial_comm import PiControlComm
+from picontrol.spi_commands import spi_cs_deselect, spi_cs_select, spi_read, spi_set_speed, spi_write
 
 
 def make_gpio_masks(gpios_on, gpios_off):
@@ -95,8 +95,8 @@ def main():
 
     args = parser.parse_args()
 
-    picontrol_port = find_port(defs.VENDOR_ID, defs.PRODUCT_ID, defs.PICONTROL_INTERFACE_NUMBER)
-    uart_passthrough_port = find_port(defs.VENDOR_ID, defs.PRODUCT_ID, defs.UART_PASSTHROUGH_INTERFACE_NUMBER)
+    picontrol_port = find_port(picontrol.defs.VENDOR_ID, picontrol.defs.PRODUCT_ID, picontrol.defs.PICONTROL_INTERFACE_NUMBER)
+    uart_passthrough_port = find_port(picontrol.defs.VENDOR_ID, picontrol.defs.PRODUCT_ID, picontrol.defs.UART_PASSTHROUGH_INTERFACE_NUMBER)
 
     if args.command == "ports":
         print("PiControl:", picontrol_port)
@@ -168,13 +168,13 @@ def main():
                 data = communicator.execute(flash_read(args.address, args.length))
                 print(data)
             if args.flash_command == "sector_erase":
-                timeout = args.timeout or defs.FlashBusyTimeoutMs.SECTOR_ERASE
+                timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.SECTOR_ERASE
                 communicator.execute(flash_sector_erase(args.address, timeout))
             if args.flash_command == "chip_erase":
-                timeout = args.timeout or defs.FlashBusyTimeoutMs.CHIP_ERASE
+                timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.CHIP_ERASE
                 communicator.execute(flash_chip_erase(timeout))
             if args.flash_command == "program":
-                timeout = args.timeout or defs.FlashBusyTimeoutMs.PROGRAM
+                timeout = args.timeout or picontrol.defs.FlashBusyTimeoutMs.PROGRAM
                 communicator.execute(flash_program(args.address, bytes(args.data), timeout))
             if args.flash_command == "program_random":
                 start = time.perf_counter()

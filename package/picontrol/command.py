@@ -1,7 +1,6 @@
 import struct
 from dataclasses import dataclass
-
-from defs import CommandStatus, CommandType
+from picontrol.defs import CommandStatus, CommandType
 
 
 @dataclass
@@ -15,6 +14,7 @@ class Command:
     def parse_response(self, response: bytes, expected_status: None | int = CommandStatus.OK):
         status = struct.unpack("<B", response)[0]
         if expected_status is not None and status != expected_status:
+            # TODO: Print better error info
             raise RuntimeError(f"Incorrect status {status}")
 
 
