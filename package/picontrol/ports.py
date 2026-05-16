@@ -4,6 +4,9 @@ from picontrol.exceptions import DeviceNotFoundError
 
 
 def interface_number_from_hwid(hwid: str) -> int:
+    if "LOCATION=" not in hwid:
+        return 0
+
     for part in hwid.split():
         if part.startswith("LOCATION="):
             return int(part.split(".")[-1])
